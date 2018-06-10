@@ -1,5 +1,9 @@
-package com.awsm_guys.mobileclicker
+package com.awsm_guys.mobileclicker.udp
 
+import android.os.Build
+import com.awsm_guys.mobileclicker.udp.poko.ClickerMessage
+import com.awsm_guys.mobileclicker.udp.poko.Header
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -9,7 +13,14 @@ import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 
 class BroadcastSender {
-    private val broadcastMessage = "Fuck you".toByteArray()
+    private val broadcastMessage =
+            ObjectMapper().writeValueAsString(
+                    ClickerMessage(
+                            Header.CONNECT,
+                            "abs ${Build.MANUFACTURER} ${Build.MODEL}",
+                            mutableMapOf("port" to "17710")
+                    )
+            ).toByteArray()
     private val broadcastPort = 8841
     private val broadcastIp = "255.255.255.255"
 
