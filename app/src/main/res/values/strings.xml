@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Mobile clicker</string>
+    <string name="previous_page">PREVIOUS PAGE</string>
+    <string name="next_page">NEXT PAGE</string>
+    <string name="select_page">SELECT PAGE</string>
 </resources>

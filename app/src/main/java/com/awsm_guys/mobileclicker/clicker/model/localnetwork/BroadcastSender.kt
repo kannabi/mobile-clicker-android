@@ -1,8 +1,8 @@
-package com.awsm_guys.mobileclicker.udp
+package com.awsm_guys.mobileclicker.clicker.model.localnetwork
 
 import android.os.Build
-import com.awsm_guys.mobileclicker.udp.poko.ClickerMessage
-import com.awsm_guys.mobileclicker.udp.poko.Header
+import com.awsm_guys.mobileclicker.clicker.model.localnetwork.poko.ClickerMessage
+import com.awsm_guys.mobileclicker.clicker.model.localnetwork.poko.Header
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -27,7 +27,7 @@ class BroadcastSender {
     private val compositeDisposable by lazy { CompositeDisposable() }
 
     fun runBroadcast() {
-        compositeDisposable.add(
+        compositeDisposable.add (
             Observable.interval(1, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.io())
                     .subscribe(this::sendBroadcast)
