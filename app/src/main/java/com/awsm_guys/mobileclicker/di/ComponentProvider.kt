@@ -9,4 +9,6 @@ class ComponentProvider(applicationContext: Context) {
                                         .build()
 
     fun getMobileClickerComponent() = appComponent.plusClickerComponent(ClickerModule())
+
+    fun getConnectionComponent() = appComponent.plusConnectionComponent(ConnectionModule())
 }

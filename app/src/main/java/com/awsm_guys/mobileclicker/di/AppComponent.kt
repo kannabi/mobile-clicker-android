@@ -7,4 +7,6 @@ import javax.inject.Singleton
 @Component(modules = [(AppModule::class)])
 interface AppComponent {
     fun plusClickerComponent(clickerModule: ClickerModule): ClickerComponent
+
+    fun plusConnectionComponent(connectionModule: ConnectionModule): ConnectionComponent
 }

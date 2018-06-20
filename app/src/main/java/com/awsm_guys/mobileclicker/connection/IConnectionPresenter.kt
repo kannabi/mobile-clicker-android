@@ -1,4 +1,6 @@
 package com.awsm_guys.mobileclicker.connection
 
-interface IConnectionPresenter {
+import com.kannabi.simplelifecycleapilibrary.lifecycleapi.Presenter
+
+interface IConnectionPresenter: Presenter<IConnectionView> {
 }

@@ -24,6 +24,6 @@ class ClickerPresenter(private val model: IClickerModel): IClickerPresenter {
     }
 
     override fun onDestroy() {
-
+        compositeDisposable.clear()
     }
 }
