@@ -1,8 +1,8 @@
-package com.awsm_guys.mobileclicker.clicker.model.localnetwork
+package com.awsm_guys.mobileclicker.clicker.model.controller.localnetwork
 
 import android.os.Build
-import com.awsm_guys.mobileclicker.clicker.model.localnetwork.poko.ClickerMessage
-import com.awsm_guys.mobileclicker.clicker.model.localnetwork.poko.Header
+import com.awsm_guys.mobileclicker.clicker.model.controller.localnetwork.poko.ClickerMessage
+import com.awsm_guys.mobileclicker.clicker.model.controller.localnetwork.poko.Header
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

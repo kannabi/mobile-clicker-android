@@ -1,4 +1,4 @@
-package com.awsm_guys.mobileclicker.clicker.model.localnetwork.poko
+package com.awsm_guys.mobileclicker.clicker.model.controller.localnetwork.poko
 
 import com.fasterxml.jackson.annotation.JsonValue
 
