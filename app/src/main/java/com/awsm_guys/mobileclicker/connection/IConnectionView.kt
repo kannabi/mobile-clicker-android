@@ -1,7 +1,8 @@
 package com.awsm_guys.mobileclicker.connection
 
 interface IConnectionView {
-    fun showAskNameWindow()
+
+    fun showAskNameWindow(currentName: String = "")
 
     fun showSearch()
 

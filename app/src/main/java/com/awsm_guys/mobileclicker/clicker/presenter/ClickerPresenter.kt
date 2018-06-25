@@ -1,12 +1,16 @@
 package com.awsm_guys.mobileclicker.clicker.presenter
 
+import android.content.Context
 import com.awsm_guys.mobileclicker.clicker.IClickerModel
 import com.awsm_guys.mobileclicker.clicker.IClickerPresenter
 import com.awsm_guys.mobileclicker.clicker.IClickerView
 import io.reactivex.disposables.CompositeDisposable
 
 
-class ClickerPresenter(private val model: IClickerModel): IClickerPresenter {
+class ClickerPresenter(
+        private val context: Context,
+        private val model: IClickerModel
+): IClickerPresenter {
 
     private val compositeDisposable = CompositeDisposable()
     private var view: IClickerView? = null

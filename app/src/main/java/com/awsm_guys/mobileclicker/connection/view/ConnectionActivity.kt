@@ -1,6 +1,8 @@
 package com.awsm_guys.mobileclicker.connection.view
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
 import com.awsm_guys.mobileclicker.App
 import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.connection.IConnectionPresenter
@@ -12,6 +14,13 @@ class ConnectionActivity :
         PresenterActivity<IConnectionView, ConnectionComponent, IConnectionPresenter>(),
         IConnectionView {
 
+    companion object {
+        const val ENTER_NAME_FRAGMENT_TAG = "ENTER_NAME_FRAGMENT_TAG"
+        const val SEARCH_FRAGMENT_TAG = "SEARCH_FRAGMENT_TAG"
+    }
+
+    private var currentFragmentTag: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         getComponent().inject(this)
@@ -21,19 +30,59 @@ class ConnectionActivity :
     override fun provideComponent(): ConnectionComponent =
             (application as App).componentProvider.getConnectionComponent()
 
-    override fun showAskNameWindow() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onBackPressed() {
+        if (currentFragmentTag == SEARCH_FRAGMENT_TAG) {
+             getPresenter().onCancelSearch()
+        }
+        super.onBackPressed()
     }
 
+    override fun onAttachFragment(fragment: Fragment?) {
+        super.onAttachFragment(fragment)
+        currentFragmentTag = when (fragment) {
+            is SearchConnectionFragment -> SEARCH_FRAGMENT_TAG
+            is EnterNameFragment -> {
+                fragment.enterListener = ::onUsernameEnter
+                ENTER_NAME_FRAGMENT_TAG
+            }
+            else -> null
+        }
+    }
+
+    override fun showAskNameWindow(currentName: String) {
+        if (currentFragmentTag != ENTER_NAME_FRAGMENT_TAG) {
+            replaceContent(
+                    EnterNameFragment()
+                            .apply {
+                                enterListener = ::onUsernameEnter
+                                this@apply.currentName = currentName
+                            }
+                    , ENTER_NAME_FRAGMENT_TAG
+            )
+        }
+    }
+
+    private fun onUsernameEnter(username: String) = getPresenter().onUsernameEnter(username)
+
     override fun showSearch() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (currentFragmentTag != SEARCH_FRAGMENT_TAG) {
+            replaceContent(SearchConnectionFragment(), SEARCH_FRAGMENT_TAG)
+        }
     }
 
     override fun showError(message: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun showSuccess() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+    }
+
+    private fun replaceContent(fragment: Fragment, tag: String) {
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment, tag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit()
     }
 }
