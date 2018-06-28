@@ -21,4 +21,6 @@ class ClickerFragment:
     override fun provideComponent(): ClickerComponent =
             (activity!!.application as App).componentProvider.getMobileClickerComponent()
 
+
+
 }

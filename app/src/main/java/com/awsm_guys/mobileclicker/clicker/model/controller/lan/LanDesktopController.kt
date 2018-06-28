@@ -1,4 +1,4 @@
-package com.awsm_guys.mobileclicker.clicker.model.controller.localnetwork
+package com.awsm_guys.mobileclicker.clicker.model.controller.lan
 
 import com.awsm_guys.mobile_clicker.mobile.localnetwork.RxSocketWrapper
 import com.awsm_guys.mobileclicker.SESSION_ID_KEY
@@ -8,7 +8,7 @@ import io.reactivex.Observable
 import java.net.InetSocketAddress
 import java.net.Socket
 
-class LocalNetworkDesktopController(
+class LanDesktopController(
         private var  desktopIp: String? = null,
         private var desktopPort: Int? = null,
         private var sessionId: String,
@@ -21,26 +21,25 @@ class LocalNetworkDesktopController(
 
     private lateinit var rxSocketWrapper: RxSocketWrapper
 
-    override fun init(): Observable<DesktopController> =
-        Observable.fromCallable {
-            if ( !((desktopIp == null || desktopPort == null) && restoreConnectionData()) ){
-                throw Exception("Cannot restore desktop ip and port")
-            } else {
-                primitiveStore.store(mapOf(
-                        IP_KEY to desktopIp!!,
-                        PORT_KEY to desktopPort!!.toString(),
-                        SESSION_ID_KEY to sessionId
-                ))
-            }
-            rxSocketWrapper = RxSocketWrapper(
+    override fun init(){
+        if ( !((desktopIp == null || desktopPort == null) && restoreConnectionData()) ){
+            throw Exception("Cannot restore desktop ip and port")
+        } else {
+            primitiveStore.store(mapOf(
+                    IP_KEY to desktopIp!!,
+                    PORT_KEY to desktopPort!!.toString(),
+                    SESSION_ID_KEY to sessionId
+            ))
+        }
+        rxSocketWrapper = RxSocketWrapper(
                 Socket().apply {
                     connect(
-                        InetSocketAddress(desktopIp!!, desktopPort!!),
-                        2000
+                            InetSocketAddress(desktopIp!!, desktopPort!!),
+                            2000
                     )
                 }
-            )
-        }.map { this }
+        )
+    }
 
 
     private fun restoreConnectionData(): Boolean {

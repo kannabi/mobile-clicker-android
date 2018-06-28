@@ -1,7 +1,9 @@
 package com.awsm_guys.mobileclicker.connection.presenter
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import com.awsm_guys.mobileclicker.MainActivity
 import com.awsm_guys.mobileclicker.connection.IConnectionModel
 import com.awsm_guys.mobileclicker.connection.IConnectionPresenter
 import com.awsm_guys.mobileclicker.connection.IConnectionView
@@ -56,18 +58,28 @@ class ConnectionPresenter(
 
     override fun onUsernameEnter(username: String) {
         compositeDisposable.add(
-            Observable.fromCallable {
-                model.saveUsername(username)
-                model.startConnection()
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                    view?.showSearch()
-                    currentState = State.SEARCHING
-                },
-                { Log.e(logTag, it.message) }
-            )
+            Observable.fromCallable { model.saveUsername(username) }
+                    .doOnNext {
+                        view?.showSearch()
+                        currentState = State.SEARCHING
+                    }
+                    .flatMap { model.startConnection() }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                    }, {
+                        Log.e(logTag, it.message)
+                        view?.showConnectionError()
+                    }, {
+                        startClicker()
+                    })
+        )
+    }
+
+    private fun startClicker() {
+        context.startActivity(
+                Intent(context, MainActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         )
     }
 

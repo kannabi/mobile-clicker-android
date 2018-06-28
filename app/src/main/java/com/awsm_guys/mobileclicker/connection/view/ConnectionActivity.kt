@@ -70,7 +70,7 @@ class ConnectionActivity :
         }
     }
 
-    override fun showError(message: String) {
+    override fun showConnectionError(message: String) {
 
     }
 

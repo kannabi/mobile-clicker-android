@@ -3,7 +3,7 @@ package com.awsm_guys.mobileclicker.clicker.model.controller
 import io.reactivex.Observable
 
 interface DesktopController {
-    fun init(): Observable<DesktopController>
+    fun init()
 
     fun getPageNumbers(): Int
 

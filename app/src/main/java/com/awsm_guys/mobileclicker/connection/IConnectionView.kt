@@ -6,7 +6,7 @@ interface IConnectionView {
 
     fun showSearch()
 
-    fun showError(message: String)
+    fun showConnectionError()
 
     fun showSuccess()
 }
