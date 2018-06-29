@@ -84,6 +84,7 @@ class ConnectionPresenter(
     }
 
     override fun onDestroy() {
+        model.onDestroy()
         compositeDisposable.clear()
     }
 

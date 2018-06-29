@@ -17,5 +17,6 @@ class ConnectionModule {
             ConnectionPresenter(model, context)
 
     @ConnectionScope @Provides
-    fun provideModel(primitiveStore: PrimitiveStore): IConnectionModel = ConnectionModel(primitiveStore)
+    fun provideModel(primitiveStore: PrimitiveStore, context: Context): IConnectionModel =
+            ConnectionModel(primitiveStore, context)
 }

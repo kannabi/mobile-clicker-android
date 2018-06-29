@@ -2,11 +2,16 @@
 package com.awsm_guys.mobileclicker.connection.model
 
 import android.content.Context
-import com.awsm_guys.mobileclicker.CURRENT_NAME_KEY
+import com.awsm_guys.mobileclicker.App
+import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopControllerFactory
+import com.awsm_guys.mobileclicker.clicker.model.controller.LAN_TAG
 import com.awsm_guys.mobileclicker.connection.IConnectionModel
 import com.awsm_guys.mobileclicker.connection.model.manager.ConnectionManager
 import com.awsm_guys.mobileclicker.connection.model.manager.lan.LanConnectionManager
+import com.awsm_guys.mobileclicker.primitivestore.CONTROLLER_TAG_KEY
+import com.awsm_guys.mobileclicker.primitivestore.CURRENT_NAME_KEY
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
+import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,7 +22,7 @@ import io.reactivex.subjects.PublishSubject
 class ConnectionModel(
         private var primitiveStore: PrimitiveStore,
         private val context: Context
-) : IConnectionModel {
+) : IConnectionModel, LoggingMixin {
 
     private var currentUsername: String? = null
 
@@ -38,13 +43,22 @@ class ConnectionModel(
             broadcastManager.startListening()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        connectionSubject.onComplete()
-                    }, {
-                        connectionSubject.onError(it)
-                    })
+                    .subscribe(::onConnected, ::onError)
 
         return connectionSubject.hide()
+    }
+
+    private fun onConnected(desktopControllerFactory: DesktopControllerFactory) {
+        primitiveStore.store(CONTROLLER_TAG_KEY, LAN_TAG) // it should be stored in another place!
+        (context as App).componentProvider.desktopControllerFactoryCache =
+                desktopControllerFactory
+        broadcastManager.stopListening()
+        managerDisposable?.dispose()
+        connectionSubject.onComplete()
+    }
+
+    private fun onError(error: Throwable) {
+        connectionSubject.onError(error)
     }
 
     override fun stopConnection() {
@@ -61,5 +75,6 @@ class ConnectionModel(
 
     override fun onDestroy() {
         managerDisposable?.dispose()
+        stopConnection()
     }
 }

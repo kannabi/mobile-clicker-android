@@ -1,15 +1,11 @@
 package com.awsm_guys.mobileclicker.clicker.model.controller
 
-import com.awsm_guys.mobileclicker.clicker.model.controller.lan.LanDesktopController
-import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
+import com.awsm_guys.mobileclicker.clicker.model.controller.lan.LanDesktopControllerFactory
 
 class DesktopControllerFactoryGenerator {
     fun generate(tag: String): DesktopControllerFactory? =
             when(tag){
-                LAN_TAG -> object : DesktopControllerFactory() {
-                    override fun create(primitiveStore: PrimitiveStore, sessionId: String): DesktopController =
-                        LanDesktopController(primitiveStore = primitiveStore, sessionId = sessionId)
-                }
+                LAN_TAG -> LanDesktopControllerFactory()
                 else -> null
             }
 }

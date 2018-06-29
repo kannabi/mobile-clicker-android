@@ -1,4 +1,4 @@
-package com.awsm_guys.mobileclicker
+package com.awsm_guys.mobileclicker.primitivestore
 
 const val SHARED_PREFERENCES_FILE_NAME = "mobile_clicker_shared_preferences"
 

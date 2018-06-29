@@ -3,16 +3,18 @@ package com.awsm_guys.mobileclicker.connection.view
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
+import android.util.Log
 import com.awsm_guys.mobileclicker.App
 import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.connection.IConnectionPresenter
 import com.awsm_guys.mobileclicker.connection.IConnectionView
 import com.awsm_guys.mobileclicker.di.ConnectionComponent
+import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import com.kannabi.simplelifecycleapilibrary.lifecycleapi.activity.PresenterActivity
 
 class ConnectionActivity :
         PresenterActivity<IConnectionView, ConnectionComponent, IConnectionPresenter>(),
-        IConnectionView {
+        IConnectionView, LoggingMixin {
 
     companion object {
         const val ENTER_NAME_FRAGMENT_TAG = "ENTER_NAME_FRAGMENT_TAG"
@@ -70,12 +72,11 @@ class ConnectionActivity :
         }
     }
 
-    override fun showConnectionError(message: String) {
+    override fun showSuccess() {
 
     }
 
-    override fun showSuccess() {
-
+    override fun showConnectionError() {
     }
 
     private fun replaceContent(fragment: Fragment, tag: String) {
