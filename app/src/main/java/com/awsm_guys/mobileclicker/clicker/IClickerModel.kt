@@ -9,4 +9,8 @@ interface IClickerModel {
     fun disconnect()
 
     fun switchPage(number: Int)
+
+    fun onNextClick()
+
+    fun onPreviousClick()
 }

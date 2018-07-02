@@ -29,6 +29,7 @@ class LanDesktopController(
     private lateinit var rxSocketWrapper: RxSocketWrapper
 
     override fun init() {
+        println("controller init")
         if (desktopIp == null || desktopPort == null || sessionId == null) {
             restoreConnectionData()
         } else {
@@ -69,8 +70,7 @@ class LanDesktopController(
                     .map { objectMapper.readValue(it, ClickerMessage::class.java) }
                     .retry()
                     .filter { it.header == SWITCH_PAGE }
-                    .map { it.body!!.toInt() }
-                    .doOnNext(::currentPage::set)
+                    .map { it.body.toInt() }
                     .retry()
 
     override fun disconnect() {
@@ -79,7 +79,7 @@ class LanDesktopController(
 
     override fun switchPage(page: Int) {
         rxSocketWrapper.sendData(
-                getMessage(Header.SWITCH_PAGE, "1", mutableMapOf())
+                getMessage(Header.SWITCH_PAGE, page.toString(), mutableMapOf())
         )
     }
 

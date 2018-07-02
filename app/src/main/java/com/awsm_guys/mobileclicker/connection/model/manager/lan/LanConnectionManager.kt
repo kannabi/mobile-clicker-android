@@ -30,7 +30,7 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
 
     private var senderSocket = DatagramSocket()
     private var connectionSocket = DatagramSocket(connectionPort)
-    private val datagramPacket = DatagramPacket(ByteArray(1024), 1024)
+    private val datagramPacket = DatagramPacket(ByteArray(2048), 2048)
 
     private lateinit var broadcastMessage: ByteArray
 
@@ -53,6 +53,7 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
                     .repeatUntil(isRunning::get)
                     .map { broadcastPacket }
                     .subscribeOn(Schedulers.io())
+                    .doOnNext { println("send packet ${String(broadcastPacket.data)}") }
                     .subscribe(senderSocket::send, ::trace)
         )
 
@@ -73,6 +74,7 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
                                 throw Exception("Empty sessionId")
                         ) as DesktopControllerFactory
                     }
+                    .doOnNext { println("controller generated") }
                     .retry()
     }
 

@@ -26,6 +26,8 @@ class ClickerModel(
     private lateinit var desktopController: DesktopController
     private val compositeDisposable = CompositeDisposable()
 
+    private var currentPage: Int = 0
+
 
     override fun connect(): Observable<ClickerEvent> =
         Observable.fromCallable {
@@ -49,7 +51,14 @@ class ClickerModel(
         compositeDisposable.add(
                 desktopController.getPageSwitchingObservable()
                         .subscribeOn(Schedulers.io())
-                        .map { if (it < 0) ConnectionClose() else PageSwitch(it) }
+                        .map {
+                            currentPage = it
+                            if (it < 0) {
+                            ConnectionClose()
+                            } else {
+                            PageSwitch(it)
+                            }
+                        }
                         .subscribe(clickerEventSubject::onNext) {
                             trace(it)
                             clickerEventSubject.onNext(ClickerBroken())
@@ -59,5 +68,13 @@ class ClickerModel(
 
     override fun switchPage(number: Int) {
         desktopController.switchPage(number)
+    }
+
+    override fun onNextClick() {
+        desktopController.switchPage(++currentPage)
+    }
+
+    override fun onPreviousClick() {
+        desktopController.switchPage(--currentPage)
     }
 }

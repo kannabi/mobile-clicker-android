@@ -70,6 +70,9 @@ class ClickerPresenter(
         )
     }
 
-    override fun onPageSwitching(number: Int) =
-        model.switchPage(number)
+    override fun onPageSwitching(number: Int) = model.switchPage(number)
+
+    override fun onNextClick() = model.onNextClick()
+
+    override fun onPreviousClick() = model.onPreviousClick()
 }

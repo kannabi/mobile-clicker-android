@@ -4,11 +4,11 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/previous_page"
+        android:id="@+id/next_page_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/previous_page"
+        android:text="@string/next_page"
         android:textSize="@dimen/switch_button_main_text_size"/>
 
     <Button
@@ -18,11 +18,13 @@
         android:layout_weight="1"
         android:text="@string/select_page"
         android:textSize="@dimen/switch_button_main_text_size"/>
+
     <Button
-        android:id="@+id/next_page_button"
+        android:id="@+id/previous_page_button"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="@string/next_page"
+        android:text="@string/previous_page"
         android:textSize="@dimen/switch_button_main_text_size"/>
+
 </LinearLayout>
