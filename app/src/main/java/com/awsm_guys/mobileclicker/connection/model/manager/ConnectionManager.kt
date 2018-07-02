@@ -5,6 +5,8 @@ import io.reactivex.Observable
 
 interface ConnectionManager {
 
+    fun setName(name: String)
+
     fun startListening(): Observable<DesktopControllerFactory>
 
     fun stopListening()

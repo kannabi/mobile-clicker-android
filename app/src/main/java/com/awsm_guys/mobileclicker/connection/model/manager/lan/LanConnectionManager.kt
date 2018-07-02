@@ -26,26 +26,22 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
     private val connectionPort = 5055
     private val broadcastIp = "255.255.255.255"
 
+    private var _name = ""
+
     private var senderSocket = DatagramSocket()
     private var connectionSocket = DatagramSocket(connectionPort)
     private val datagramPacket = DatagramPacket(ByteArray(1024), 1024)
 
-    private val broadcastMessage by lazy {
-            ObjectMapper().writeValueAsString(
-                    ClickerMessage(
-                            Header.CONNECT,
-                            "abs ${Build.MANUFACTURER} ${Build.MODEL}",
-                            mutableMapOf("port" to connectionPort.toString())
-                    )
-            ).toByteArray()
-    }
+    private lateinit var broadcastMessage: ByteArray
 
-    private val broadcastPacket = DatagramPacket(
+    private val broadcastPacket by lazy {
+        DatagramPacket(
             broadcastMessage,
             broadcastMessage.size,
             InetAddress.getByName(broadcastIp),
             broadcastPort
-    )
+        )
+    }
 
     private val compositeDisposable by lazy { CompositeDisposable() }
     private val isRunning = AtomicBoolean(false)
@@ -84,4 +80,19 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
         isRunning.set(false)
         compositeDisposable.clear()
     }
+
+    override fun setName(name: String) {
+        _name = name
+        broadcastMessage = getBroadcastMessageByteArray()
+    }
+
+    private fun getBroadcastMessageByteArray() =
+            ObjectMapper().writeValueAsString(
+                    ClickerMessage(
+                            Header.CONNECT,
+                            "$_name ${Build.MANUFACTURER} ${Build.MODEL}",
+                            mutableMapOf("port" to connectionPort.toString())
+                    )
+            ).toByteArray()
+
 }

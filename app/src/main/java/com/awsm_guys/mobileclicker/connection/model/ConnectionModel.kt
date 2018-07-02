@@ -26,13 +26,14 @@ class ConnectionModel(
 
     private var currentUsername: String? = null
 
-    private val broadcastManager: ConnectionManager by lazy { LanConnectionManager() }
+    private val connectionManager: ConnectionManager by lazy { LanConnectionManager() }
 
     private var managerDisposable: Disposable? = null
     private val connectionSubject = PublishSubject.create<Unit>()
 
     override fun saveUsername(username: String) {
         if (currentUsername != username) {
+            connectionManager.setName(username)
             primitiveStore.store(CURRENT_NAME_KEY, username)
             currentUsername = username
         }
@@ -40,7 +41,7 @@ class ConnectionModel(
 
     override fun startConnection(): Observable<Unit> {
         managerDisposable =
-            broadcastManager.startListening()
+            connectionManager.startListening()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(::onConnected, ::onError)
@@ -52,7 +53,7 @@ class ConnectionModel(
         primitiveStore.store(CONTROLLER_TAG_KEY, LAN_TAG) // it should be stored in another place!
         (context as App).componentProvider.desktopControllerFactoryCache =
                 desktopControllerFactory
-        broadcastManager.stopListening()
+        connectionManager.stopListening()
         managerDisposable?.dispose()
         connectionSubject.onComplete()
     }
@@ -62,7 +63,7 @@ class ConnectionModel(
     }
 
     override fun stopConnection() {
-        broadcastManager.stopListening()
+        connectionManager.stopListening()
         managerDisposable?.dispose()
     }
 
