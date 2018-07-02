@@ -25,6 +25,10 @@ class ConnectionModel(
 ) : IConnectionModel, LoggingMixin {
 
     private var currentUsername: String? = null
+    set(value) {
+        connectionManager.setName(value ?: "")
+        field = value
+    }
 
     private val connectionManager: ConnectionManager by lazy { LanConnectionManager() }
 
@@ -33,7 +37,6 @@ class ConnectionModel(
 
     override fun saveUsername(username: String) {
         if (currentUsername != username) {
-            connectionManager.setName(username)
             primitiveStore.store(CURRENT_NAME_KEY, username)
             currentUsername = username
         }
