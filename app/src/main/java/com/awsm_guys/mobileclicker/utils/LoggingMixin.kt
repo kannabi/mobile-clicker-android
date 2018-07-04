@@ -7,7 +7,7 @@ interface LoggingMixin {
         Log.e("Clicker ${this::class.simpleName}", error.message ?: "EXCEPTION")
     }
 
-    private fun log(message: String) {
+    fun log(message: String) {
         Log.d("Clicker ${this::class.simpleName}", message)
     }
 }

@@ -1,6 +1,5 @@
 package com.awsm_guys.mobileclicker.clicker.model.controller.lan
 
-import com.awsm_guys.mobile_clicker.mobile.localnetwork.RxSocketWrapper
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopController
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.ClickerMessage
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header
