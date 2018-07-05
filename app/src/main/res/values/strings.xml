@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Mobile clicker</string>
+    <string name="previous_page">PREVIOUS PAGE</string>
+    <string name="next_page">NEXT PAGE</string>
+    <string name="select_page">SELECT PAGE</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="please_enter_name">Please, set your device username.\nIt will help to connect exactly your device.\nJust from 3 to 10 symbols</string>
+    <string name="enter_username">Enter username</string>
+    <string name="enter_text">ENTER</string>
+    <string name="wrong_username_length">Wrong username length</string>
 </resources>

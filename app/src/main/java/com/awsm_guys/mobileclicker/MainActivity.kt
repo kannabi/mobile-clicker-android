@@ -1,29 +1,24 @@
 package com.awsm_guys.mobileclicker
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import com.awsm_guys.mobileclicker.udp.BroadcastSender
-import io.reactivex.disposables.CompositeDisposable
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
+import com.awsm_guys.mobileclicker.clicker.view.ClickerFragment
+import com.kannabi.simplelifecycleapilibrary.lifecycleapi.activity.ComponentStoreActivity
 
-
-
-class MainActivity : AppCompatActivity() {
-    private val compositeDisposable by lazy { CompositeDisposable() }
-    private val broadcastSender = BroadcastSender()
+class MainActivity: ComponentStoreActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        placeFragment(ClickerFragment())
     }
 
-    override fun onStart() {
-        super.onStart()
-        broadcastSender.runBroadcast()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        broadcastSender.onDestroy()
-        compositeDisposable.clear()
+    private fun placeFragment(fragment: Fragment){
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit()
     }
 }

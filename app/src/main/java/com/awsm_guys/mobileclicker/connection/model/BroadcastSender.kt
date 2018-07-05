@@ -1,16 +1,15 @@
-package com.awsm_guys.mobileclicker.udp
+package com.awsm_guys.mobileclicker.connection.model
 
 import android.os.Build
-import com.awsm_guys.mobileclicker.udp.poko.ClickerMessage
-import com.awsm_guys.mobileclicker.udp.poko.Header
+import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.ClickerMessage
+import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 class BroadcastSender {
     private val broadcastMessage =
@@ -26,12 +25,15 @@ class BroadcastSender {
 
     private val compositeDisposable by lazy { CompositeDisposable() }
 
+    private val publishSubject: PublishSubject<Unit> = PublishSubject.create()
+
+    private val isRunning = AtomicBoolean(false)
+
     fun runBroadcast() {
-        compositeDisposable.add(
-            Observable.interval(1, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(this::sendBroadcast)
-        )
+        while (isRunning.get()) {
+
+        }
+
     }
 
     private fun sendBroadcast(num: Long) {
