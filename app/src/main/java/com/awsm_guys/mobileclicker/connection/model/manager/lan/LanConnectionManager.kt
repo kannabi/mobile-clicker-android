@@ -81,6 +81,8 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
     override fun stopListening() {
         isRunning.set(false)
         compositeDisposable.clear()
+        connectionSocket.close()
+        senderSocket.close()
     }
 
     override fun setName(name: String) {

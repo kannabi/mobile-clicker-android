@@ -24,13 +24,12 @@ class ConnectionModel(
         private val context: Context
 ) : IConnectionModel, LoggingMixin {
 
+    private val connectionManager: ConnectionManager by lazy { LanConnectionManager() }
     private var currentUsername: String? = null
     set(value) {
         connectionManager.setName(value ?: "")
         field = value
     }
-
-    private val connectionManager: ConnectionManager by lazy { LanConnectionManager() }
 
     private var managerDisposable: Disposable? = null
     private val connectionSubject = PublishSubject.create<Unit>()

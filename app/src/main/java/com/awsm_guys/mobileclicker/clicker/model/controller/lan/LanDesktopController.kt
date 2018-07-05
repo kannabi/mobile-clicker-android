@@ -7,10 +7,11 @@ import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.SWIT
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
 import com.awsm_guys.mobileclicker.primitivestore.SESSION_ID_KEY
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.reactivex.Observable
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.net.SocketTimeoutException
 
 class LanDesktopController(
         private var desktopIp: String? = null,
@@ -24,12 +25,13 @@ class LanDesktopController(
     private val IP_KEY = "IP"
     private val PORT_KEY = "PORT"
 
-    private val objectMapper by lazy { ObjectMapper() }
+    private val objectMapper by lazy { jacksonObjectMapper() }
     private lateinit var rxSocketWrapper: RxSocketWrapper
 
     override fun init() {
         println("controller init")
         if (desktopIp == null || desktopPort == null || sessionId == null) {
+            println("try to restore")
             restoreConnectionData()
         } else {
             primitiveStore.store(mapOf(
@@ -40,10 +42,15 @@ class LanDesktopController(
         }
         rxSocketWrapper = RxSocketWrapper(
                 Socket().apply {
-                    connect(
+                    try {
+                        connect(
                             InetSocketAddress(desktopIp!!, desktopPort!!),
                             2000
-                    )
+                        )
+                    } catch (timeoutException: SocketTimeoutException) {
+                        close()
+                        throw timeoutException
+                    }
                 }
         )
     }
@@ -52,7 +59,8 @@ class LanDesktopController(
         desktopIp = primitiveStore.find(IP_KEY)
         desktopPort = primitiveStore.find(PORT_KEY)?.toInt()
         sessionId = primitiveStore.find(SESSION_ID_KEY)
-        if (desktopIp != null && desktopPort != null && sessionId != null)
+        println("$desktopIp $desktopPort $sessionId")
+        if (desktopIp == null || desktopPort == null || sessionId == null)
             throw Exception("Cannot restore desktop ip and port")
     }
 
