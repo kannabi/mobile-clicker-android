@@ -10,4 +10,6 @@
     <string name="enter_username">Enter username</string>
     <string name="enter_text">ENTER</string>
     <string name="wrong_username_length">Wrong username length</string>
+    <string name="zero">0</string>
+    <string name="of">OF</string>
 </resources>
