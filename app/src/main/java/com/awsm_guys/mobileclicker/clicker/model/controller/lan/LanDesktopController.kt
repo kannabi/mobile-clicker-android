@@ -4,6 +4,7 @@ import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopController
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.ClickerMessage
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.SWITCH_PAGE
+import com.awsm_guys.mobileclicker.primitivestore.MAX_PAGE_KEY
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
 import com.awsm_guys.mobileclicker.primitivestore.SESSION_ID_KEY
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
@@ -18,7 +19,7 @@ class LanDesktopController(
         private var desktopPort: Int? = null,
         private var sessionId: String? = null,
         private var primitiveStore: PrimitiveStore,
-        private var maxPage: Int = 0,
+        private var maxPage: Int? = null,
         private var currentPage: Int = 0
 ): DesktopController, LoggingMixin {
 
@@ -30,14 +31,16 @@ class LanDesktopController(
 
     override fun init() {
         println("controller init")
-        if (desktopIp == null || desktopPort == null || sessionId == null) {
+        if (desktopIp == null || desktopPort == null ||
+                sessionId == null || maxPage == null) {
             println("try to restore")
             restoreConnectionData()
         } else {
             primitiveStore.store(mapOf(
                     IP_KEY to desktopIp!!,
                     PORT_KEY to desktopPort!!.toString(),
-                    SESSION_ID_KEY to sessionId!!
+                    SESSION_ID_KEY to sessionId!!,
+                    MAX_PAGE_KEY to maxPage!!.toString()
             ))
         }
         rxSocketWrapper = RxSocketWrapper(
@@ -59,13 +62,14 @@ class LanDesktopController(
         desktopIp = primitiveStore.find(IP_KEY)
         desktopPort = primitiveStore.find(PORT_KEY)?.toInt()
         sessionId = primitiveStore.find(SESSION_ID_KEY)
-        println("$desktopIp $desktopPort $sessionId")
-        if (desktopIp == null || desktopPort == null || sessionId == null)
+        maxPage = primitiveStore.find(MAX_PAGE_KEY)?.toInt()
+        println("restored $desktopIp $desktopPort $sessionId $maxPage")
+        if (desktopIp == null || desktopPort == null || sessionId == null || maxPage == null)
             throw Exception("Cannot restore desktop ip and port")
     }
 
     override fun getPageNumbers(): Int {
-        return maxPage
+        return maxPage!!
     }
 
     override fun getCurrentPage(): Int {
@@ -78,6 +82,7 @@ class LanDesktopController(
                     .retry()
                     .filter { it.header == SWITCH_PAGE }
                     .map { it.body.toInt() }
+                    .doOnNext(::currentPage::set)
                     .retry()
 
     override fun disconnect() {
@@ -85,9 +90,11 @@ class LanDesktopController(
     }
 
     override fun switchPage(page: Int) {
-        rxSocketWrapper.sendData(
-                getMessage(Header.SWITCH_PAGE, page.toString(), mutableMapOf())
-        )
+        if (page in 1..maxPage!!) {
+            rxSocketWrapper.sendData(
+                    getMessage(Header.SWITCH_PAGE, page.toString(), mutableMapOf())
+            )
+        }
     }
 
     private fun getMessage(header: Header, body: String, features: MutableMap<String, String>) =

@@ -57,7 +57,6 @@ class ClickerPresenter(
                 view?.apply {
                     showConnectionEstablished()
                     updateMaxPage(event.maxPage)
-                    updateCurrentPage(event.currentPage)
                 }
             }
         }

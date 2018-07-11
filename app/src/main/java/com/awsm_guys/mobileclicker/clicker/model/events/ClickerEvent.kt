@@ -3,7 +3,6 @@ package com.awsm_guys.mobileclicker.clicker.model.events
 sealed class ClickerEvent
 
 data class ConnectionOpen(
-        val currentPage: Int,
         val maxPage: Int
 ): ClickerEvent()
 

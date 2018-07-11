@@ -70,8 +70,10 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
                         LanDesktopControllerFactory(
                                 datagramPacket.address.hostAddress,
                                 it.body.toInt(),
-                                it.features["sessionId"] ?:
-                                throw Exception("Empty sessionId")
+                                it.features["sessionId"]
+                                        ?: throw Exception("Empty sessionId"),
+                                it.features["maxPage"]?.toInt()
+                                        ?: throw Exception("Empty or invalid maxPage")
                         ) as DesktopControllerFactory
                     }
                     .doOnNext { println("controller generated") }

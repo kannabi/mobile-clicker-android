@@ -4,10 +4,7 @@ import com.awsm_guys.mobileclicker.clicker.IClickerModel
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopController
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopControllerFactory
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopControllerFactoryGenerator
-import com.awsm_guys.mobileclicker.clicker.model.events.ClickerBroken
-import com.awsm_guys.mobileclicker.clicker.model.events.ClickerEvent
-import com.awsm_guys.mobileclicker.clicker.model.events.ConnectionClose
-import com.awsm_guys.mobileclicker.clicker.model.events.PageSwitch
+import com.awsm_guys.mobileclicker.clicker.model.events.*
 import com.awsm_guys.mobileclicker.primitivestore.CONTROLLER_TAG_KEY
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
@@ -41,6 +38,7 @@ class ClickerModel(
             desktopController.init()
             subscribeToDesktopController()
         }
+        .doOnNext{ clickerEventSubject.onNext(ConnectionOpen(desktopController.getPageNumbers())) }
         .flatMap { clickerEventSubject.hide() }
 
     override fun disconnect() {
@@ -71,10 +69,10 @@ class ClickerModel(
     }
 
     override fun onNextClick() {
-        desktopController.switchPage(++currentPage)
+        switchPage(currentPage + 1)
     }
 
     override fun onPreviousClick() {
-        desktopController.switchPage(--currentPage)
+        switchPage(currentPage - 1)
     }
 }
