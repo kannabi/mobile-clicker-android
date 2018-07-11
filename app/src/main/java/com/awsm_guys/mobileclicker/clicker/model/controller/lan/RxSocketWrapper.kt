@@ -38,7 +38,7 @@ class RxSocketWrapper(private val socket: Socket): LoggingMixin {
                             println(String(data))
                             emitter.onNext(String(data))
                         } else {
-                            emitter.onError(CloseWithoutMessageException())
+                            emitter.onComplete()
                         }
                     }
                 } catch (e: Throwable){

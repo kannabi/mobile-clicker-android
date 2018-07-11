@@ -79,11 +79,11 @@ class LanDesktopController(
     override fun getPageSwitchingObservable(): Observable<Int> =
             rxSocketWrapper.inputObservable
                     .map { objectMapper.readValue(it, ClickerMessage::class.java) }
-                    .retry()
+//                    .retry()
                     .filter { it.header == SWITCH_PAGE }
                     .map { it.body.toInt() }
                     .doOnNext(::currentPage::set)
-                    .retry()
+//                    .retry()
 
     override fun disconnect() {
         rxSocketWrapper.close()

@@ -57,10 +57,12 @@ class ClickerModel(
                             PageSwitch(it)
                             }
                         }
-                        .subscribe(clickerEventSubject::onNext) {
+                        .subscribe(clickerEventSubject::onNext, {
                             trace(it)
                             clickerEventSubject.onNext(ClickerBroken())
-                        }
+                        }, {
+                            clickerEventSubject.onNext(ConnectionClose())
+                        })
         )
     }
 
