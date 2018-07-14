@@ -3,7 +3,6 @@ package com.awsm_guys.mobileclicker.connection.view
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
-import android.util.Log
 import com.awsm_guys.mobileclicker.App
 import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.connection.IConnectionPresenter
@@ -35,6 +34,7 @@ class ConnectionActivity :
     override fun onBackPressed() {
         if (currentFragmentTag == SEARCH_FRAGMENT_TAG) {
              getPresenter().onCancelSearch()
+            currentFragmentTag = ENTER_NAME_FRAGMENT_TAG
         }
         super.onBackPressed()
     }

@@ -18,18 +18,18 @@ import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-class LanConnectionManager: ConnectionManager, LoggingMixin{
+class LanConnectionManager: ConnectionManager, LoggingMixin {
 
     private val objectMapper = ObjectMapper().registerModule(KotlinModule())
 
-    private val broadcastPort = 8841
-    private val connectionPort = 5055
+    var broadcastPort = 8841
+    var connectionPort = 5055
     private val broadcastIp = "255.255.255.255"
 
     private var _name = ""
 
-    private var senderSocket = DatagramSocket()
-    private var connectionSocket = DatagramSocket(connectionPort)
+    private var senderSocket = DatagramSocket().apply { reuseAddress = true }
+    private var connectionSocket = DatagramSocket(connectionPort).apply { reuseAddress = true }
     private val datagramPacket = DatagramPacket(ByteArray(2048), 2048)
 
     private lateinit var broadcastMessage: ByteArray
@@ -50,15 +50,13 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
         isRunning.set(true)
         compositeDisposable.add(
             Observable.interval(500, TimeUnit.MILLISECONDS)
-                    .repeatUntil(isRunning::get)
                     .map { broadcastPacket }
                     .subscribeOn(Schedulers.io())
-                    .doOnNext { println("send packet ${String(broadcastPacket.data)}") }
+                    .doOnNext { log("send packet ${String(broadcastPacket.data)}") }
                     .subscribe(senderSocket::send, ::trace)
         )
 
             return Observable.fromCallable { connectionSocket.receive(datagramPacket) }
-                    .repeatUntil(isRunning::get)
                     .map {
                         objectMapper.readValue(
                                 String(datagramPacket.data), ClickerMessage::class.java
@@ -76,15 +74,12 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
                                         ?: throw Exception("Empty or invalid maxPage")
                         ) as DesktopControllerFactory
                     }
-                    .doOnNext { println("controller generated") }
                     .retry()
     }
 
     override fun stopListening() {
         isRunning.set(false)
         compositeDisposable.clear()
-        connectionSocket.close()
-        senderSocket.close()
     }
 
     override fun setName(name: String) {

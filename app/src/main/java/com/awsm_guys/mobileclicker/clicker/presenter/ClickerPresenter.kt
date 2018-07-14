@@ -50,7 +50,7 @@ class ClickerPresenter(
 
     private fun processClickerEvent(event: ClickerEvent) {
         when(event) {
-            is ConnectionClose -> view?.showConnectionClose()
+            is ConnectionClose -> onGoToConnection()
             is ClickerBroken -> view?.showConnectionLossDialog()
             is PageSwitch -> view?.updateCurrentPage(event.page)
             is ConnectionOpen -> {

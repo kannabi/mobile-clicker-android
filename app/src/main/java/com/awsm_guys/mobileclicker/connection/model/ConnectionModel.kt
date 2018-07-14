@@ -7,7 +7,6 @@ import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopControllerFac
 import com.awsm_guys.mobileclicker.clicker.model.controller.LAN_TAG
 import com.awsm_guys.mobileclicker.connection.IConnectionModel
 import com.awsm_guys.mobileclicker.connection.model.manager.ConnectionManager
-import com.awsm_guys.mobileclicker.connection.model.manager.lan.LanConnectionManager
 import com.awsm_guys.mobileclicker.primitivestore.CONTROLLER_TAG_KEY
 import com.awsm_guys.mobileclicker.primitivestore.CURRENT_NAME_KEY
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
@@ -21,10 +20,9 @@ import io.reactivex.subjects.PublishSubject
 
 class ConnectionModel(
         private var primitiveStore: PrimitiveStore,
-        private val context: Context
+        private val context: Context,
+        private val connectionManager: ConnectionManager
 ) : IConnectionModel, LoggingMixin {
-
-    private val connectionManager: ConnectionManager by lazy { LanConnectionManager() }
     private var currentUsername: String? = null
     set(value) {
         connectionManager.setName(value ?: "")

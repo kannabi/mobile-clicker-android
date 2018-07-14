@@ -5,13 +5,21 @@ import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopControllerFac
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
 
 class LanDesktopControllerFactory(
-        private val desktopIp: String? = null,
-        private val desktopPort: Int? = null,
-        private val sessionId: String? = null,
-        private val maxPage: Int? = null
+        val desktopIp: String? = null,
+        val desktopPort: Int? = null,
+        val sessionId: String? = null,
+        val maxPage: Int? = null
 ) : DesktopControllerFactory() {
+
+
     override fun create(primitiveStore: PrimitiveStore): DesktopController =
             LanDesktopController(
                     desktopIp, desktopPort, sessionId, primitiveStore, maxPage
             )
+
+    override fun toString(): String {
+        return "LanDesktopControllerFactory(desktopIp=$desktopIp, desktopPort=$desktopPort, sessionId=$sessionId, maxPage=$maxPage)"
+    }
+
+
 }

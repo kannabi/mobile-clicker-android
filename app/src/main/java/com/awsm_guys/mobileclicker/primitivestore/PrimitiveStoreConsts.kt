@@ -9,3 +9,7 @@ const val MAX_PAGE_KEY = "MAX_PAGE_KEY"
 const val CONTROLLER_TAG_KEY = "CONTROLLER_TAG_KEY"
 
 const val CURRENT_NAME_KEY = "CURRENT_NAME"
+
+const val IP_KEY = "IP"
+
+const val PORT_KEY = "PORT"
