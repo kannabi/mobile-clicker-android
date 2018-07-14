@@ -74,7 +74,6 @@ class LanConnectionManager: ConnectionManager, LoggingMixin {
                                         ?: throw Exception("Empty or invalid maxPage")
                         ) as DesktopControllerFactory
                     }
-                    .doOnNext { println("controller generated") }
                     .retry()
     }
 

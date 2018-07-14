@@ -28,24 +28,13 @@ class LanConnectionManagerTest {
         val manager = LanConnectionManager().apply {
             startListening()
                     .subscribeOn(Schedulers.io())
-                    .subscribe({
-                        factorySubject.onNext(it)
-                    }) {
-                        println("pizda")
-                        it.printStackTrace()
-                    }
+                    .subscribe(factorySubject::onNext, Throwable::printStackTrace)
         }
 
         var message: ByteArray
         val socket = DatagramSocket()
 
         message = "Wubba Lubba Dub Dub".toByteArray()
-        socket.send(
-                DatagramPacket(
-                        message, message.size,
-                        InetAddress.getByName("127.0.0.1"), manager.connectionPort
-                )
-        )
 
         socket.send(
                 DatagramPacket(
@@ -78,6 +67,8 @@ class LanConnectionManagerTest {
             assert(testMaxPage.toInt() == maxPage)
             assert(sessionId == testSessionId)
         }
+
+        socket.close()
         println("Complete")
     }
 }
