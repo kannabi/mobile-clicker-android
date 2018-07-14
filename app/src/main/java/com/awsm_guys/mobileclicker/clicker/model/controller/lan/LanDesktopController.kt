@@ -4,9 +4,7 @@ import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopController
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.ClickerMessage
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.SWITCH_PAGE
-import com.awsm_guys.mobileclicker.primitivestore.MAX_PAGE_KEY
-import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
-import com.awsm_guys.mobileclicker.primitivestore.SESSION_ID_KEY
+import com.awsm_guys.mobileclicker.primitivestore.*
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.reactivex.Observable
@@ -22,9 +20,6 @@ class LanDesktopController(
         private var maxPage: Int? = null,
         private var currentPage: Int = 0
 ): DesktopController, LoggingMixin {
-
-    private val IP_KEY = "IP"
-    private val PORT_KEY = "PORT"
 
     private val objectMapper by lazy { jacksonObjectMapper() }
     private lateinit var rxSocketWrapper: RxSocketWrapper

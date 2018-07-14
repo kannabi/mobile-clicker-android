@@ -1,4 +1,4 @@
-package com.awsm_guys.mobileclicker
+package com.awsm_guys.mobileclicker.lan
 
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopControllerFactory
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.LanDesktopControllerFactory
