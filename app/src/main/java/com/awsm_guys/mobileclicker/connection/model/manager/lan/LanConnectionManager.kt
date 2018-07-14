@@ -22,8 +22,8 @@ class LanConnectionManager: ConnectionManager, LoggingMixin {
 
     private val objectMapper = ObjectMapper().registerModule(KotlinModule())
 
-    private val broadcastPort = 8841
-    private val connectionPort = 5055
+    var broadcastPort = 8841
+    var connectionPort = 5055
     private val broadcastIp = "255.255.255.255"
 
     private var _name = ""
