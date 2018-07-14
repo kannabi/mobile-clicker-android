@@ -28,8 +28,8 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
 
     private var _name = ""
 
-    private var senderSocket = DatagramSocket()
-    private var connectionSocket = DatagramSocket(connectionPort)
+    private var senderSocket = DatagramSocket().apply { reuseAddress = true }
+    private var connectionSocket = DatagramSocket(connectionPort).apply { reuseAddress = true }
     private val datagramPacket = DatagramPacket(ByteArray(2048), 2048)
 
     private lateinit var broadcastMessage: ByteArray
@@ -83,8 +83,6 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
     override fun stopListening() {
         isRunning.set(false)
         compositeDisposable.clear()
-        connectionSocket.close()
-        senderSocket.close()
     }
 
     override fun setName(name: String) {

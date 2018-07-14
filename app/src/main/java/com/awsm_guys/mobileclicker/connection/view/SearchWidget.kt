@@ -34,7 +34,7 @@ class SearchWidget: View {
         valueAnimator.apply {
             repeatCount = INFINITE
             repeatMode = ValueAnimator.RESTART
-            duration = 1500
+            duration = 1000
             interpolator = AccelerateInterpolator()
             addUpdateListener(::redrawBitmap)
         }

@@ -54,6 +54,7 @@ class ConnectionPresenter(
     }
 
     override fun onCancelSearch() {
+        model.stopConnection()
     }
 
     override fun onUsernameEnter(username: String) {
