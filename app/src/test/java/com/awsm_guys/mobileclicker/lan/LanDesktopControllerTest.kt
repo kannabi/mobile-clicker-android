@@ -21,6 +21,21 @@ import java.util.concurrent.TimeUnit
 
 class LanDesktopControllerTest {
 
+    private val defaultParamsMap by lazy { mapOf (
+            IP_KEY to "127.0.0.1",
+            PORT_KEY to "8666",
+            SESSION_ID_KEY to "jhsfvakjs",
+            MAX_PAGE_KEY to "15"
+        )
+    }
+
+    private fun getDefaultController() =
+            LanDesktopControllerFactory().create(
+                        TestPrimitiveStore().apply {
+                            store(defaultParamsMap)
+                        }
+                )
+
     @Test
     fun testRestoring() {
         val store = TestPrimitiveStore()
@@ -34,14 +49,7 @@ class LanDesktopControllerTest {
 
         assert(isCrashed)
 
-        store.store(
-            mapOf(
-                IP_KEY to "localhost",
-                PORT_KEY to "8666",
-                SESSION_ID_KEY to "jhsfvakjs",
-                MAX_PAGE_KEY to "15"
-            )
-        )
+        store.store(defaultParamsMap)
 
         Single.fromCallable {
             ServerSocket().use {
@@ -62,23 +70,12 @@ class LanDesktopControllerTest {
 
     @Test
     fun testTrashReceive() {
-        val controller = LanDesktopControllerFactory().create(
-                TestPrimitiveStore().apply {
-                    store(
-                        mapOf(
-                                IP_KEY to "127.0.0.1",
-                                PORT_KEY to "8666",
-                                SESSION_ID_KEY to "jhsfvakjs",
-                                MAX_PAGE_KEY to "15"
-                        )
-                    )
-                }
-        )
+        val controller = getDefaultController()
 
         val unblockSubject = PublishSubject.create<Unit>()
 
         Single.just(unblockSubject)
-                .map(::imitateDesktop)
+                .map(::imitateTrashDesktop)
                 .subscribeOn(Schedulers.io()).subscribe()
 
         controller.init()
@@ -87,7 +84,7 @@ class LanDesktopControllerTest {
         unblockSubject.onNext(Unit)
     }
 
-    private fun imitateDesktop(unblockObservable: Observable<Unit>) {
+    private fun imitateTrashDesktop(unblockObservable: Observable<Unit>) {
         val objectMapper = jacksonObjectMapper()
         val rxSocketWrapper: RxSocketWrapper =
             ServerSocket().use {
@@ -122,7 +119,35 @@ class LanDesktopControllerTest {
                 )
         )
 
-        unblockObservable.toFuture().get(3600, TimeUnit.SECONDS)
+        unblockObservable.toFuture().get(3, TimeUnit.SECONDS)
+        rxSocketWrapper.close()
+    }
+
+    @Test
+    fun testServerDisconnect() {
+        val controller = getDefaultController()
+        val unblockSubject = PublishSubject.create<Unit>()
+
+        Single.just(unblockSubject)
+                .map(::imitateDroppingDesktop)
+                .subscribeOn(Schedulers.io()).subscribe()
+
+        controller.init()
+
+        unblockSubject.onNext(Unit)
+        controller.getPageSwitchingObservable().test()
+                .assertComplete()
+    }
+
+    private fun imitateDroppingDesktop(unblockObservable: Observable<Unit>) {
+        val rxSocketWrapper: RxSocketWrapper =
+                ServerSocket().use {
+                    it.reuseAddress = true
+                    it.bind(InetSocketAddress(8666))
+                    RxSocketWrapper(it.accept())
+                }
+        unblockObservable.blockingNext()
+
         rxSocketWrapper.close()
     }
 }
