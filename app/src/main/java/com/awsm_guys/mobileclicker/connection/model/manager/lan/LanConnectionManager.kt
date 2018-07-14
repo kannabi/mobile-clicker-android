@@ -18,7 +18,7 @@ import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-class LanConnectionManager: ConnectionManager, LoggingMixin{
+class LanConnectionManager: ConnectionManager, LoggingMixin {
 
     private val objectMapper = ObjectMapper().registerModule(KotlinModule())
 
@@ -50,15 +50,13 @@ class LanConnectionManager: ConnectionManager, LoggingMixin{
         isRunning.set(true)
         compositeDisposable.add(
             Observable.interval(500, TimeUnit.MILLISECONDS)
-                    .repeatUntil(isRunning::get)
                     .map { broadcastPacket }
                     .subscribeOn(Schedulers.io())
-                    .doOnNext { println("send packet ${String(broadcastPacket.data)}") }
+                    .doOnNext { log("send packet ${String(broadcastPacket.data)}") }
                     .subscribe(senderSocket::send, ::trace)
         )
 
             return Observable.fromCallable { connectionSocket.receive(datagramPacket) }
-                    .repeatUntil(isRunning::get)
                     .map {
                         objectMapper.readValue(
                                 String(datagramPacket.data), ClickerMessage::class.java
