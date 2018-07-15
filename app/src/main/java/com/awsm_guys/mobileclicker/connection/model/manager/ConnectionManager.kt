@@ -10,4 +10,6 @@ interface ConnectionManager {
     fun startListening(): Observable<DesktopControllerFactory>
 
     fun stopListening()
+
+    fun close()
 }

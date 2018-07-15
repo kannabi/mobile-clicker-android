@@ -77,5 +77,6 @@ class ConnectionModel(
     override fun onDestroy() {
         managerDisposable?.dispose()
         stopConnection()
+        connectionManager.close()
     }
 }

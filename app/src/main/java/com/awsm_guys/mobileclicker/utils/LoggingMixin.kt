@@ -5,6 +5,7 @@ import android.util.Log
 interface LoggingMixin {
     fun trace(error: Throwable){
         Log.e("Clicker ${this::class.simpleName}", error.message ?: "EXCEPTION")
+        error.printStackTrace()
     }
 
     fun log(message: String) {

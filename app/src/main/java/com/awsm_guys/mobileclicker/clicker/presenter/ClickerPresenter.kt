@@ -63,6 +63,7 @@ class ClickerPresenter(
     }
 
     override fun onGoToConnection() {
+        model.disconnect()
         context.startActivity(
                 Intent(context, ConnectionActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

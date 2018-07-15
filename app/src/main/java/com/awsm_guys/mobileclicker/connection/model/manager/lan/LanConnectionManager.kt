@@ -96,4 +96,8 @@ class LanConnectionManager: ConnectionManager, LoggingMixin {
                     )
             ).toByteArray()
 
+    override fun close() {
+        connectionSocket.close()
+        senderSocket.close()
+    }
 }

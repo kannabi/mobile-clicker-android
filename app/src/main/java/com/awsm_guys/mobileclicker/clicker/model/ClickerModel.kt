@@ -42,7 +42,8 @@ class ClickerModel(
         .flatMap { clickerEventSubject.hide() }
 
     override fun disconnect() {
-
+        desktopController.disconnect()
+        compositeDisposable.clear()
     }
 
     private fun subscribeToDesktopController() {
@@ -51,11 +52,7 @@ class ClickerModel(
                         .subscribeOn(Schedulers.io())
                         .map {
                             currentPage = it
-                            if (it < 0) {
-                            ConnectionClose()
-                            } else {
                             PageSwitch(it)
-                            }
                         }
                         .subscribe(clickerEventSubject::onNext, {
                             trace(it)

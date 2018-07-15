@@ -23,6 +23,7 @@ class LanDesktopController(
 
     private val objectMapper by lazy { jacksonObjectMapper() }
     private lateinit var rxSocketWrapper: RxSocketWrapper
+    private var inited = false
 
     override fun init() {
         println("controller init")
@@ -51,6 +52,8 @@ class LanDesktopController(
                     }
                 }
         )
+
+        inited = true
     }
 
     private fun restoreConnectionData() {
@@ -81,7 +84,10 @@ class LanDesktopController(
                     .retry()
 
     override fun disconnect() {
-        rxSocketWrapper.close()
+        if (inited) {
+            rxSocketWrapper.close()
+            inited = false
+        }
     }
 
     override fun switchPage(page: Int) {

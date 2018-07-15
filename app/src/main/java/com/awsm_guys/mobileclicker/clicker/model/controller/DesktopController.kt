@@ -14,7 +14,7 @@ interface DesktopController {
     /**
      * get a observable that emmit page number updates
      *
-     * @return a new page number; negative number when session has been finished
+     * @return a new page number
      * */
     fun getPageSwitchingObservable(): Observable<Int>
 
