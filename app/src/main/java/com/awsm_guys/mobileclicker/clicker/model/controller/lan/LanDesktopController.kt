@@ -3,6 +3,7 @@ package com.awsm_guys.mobileclicker.clicker.model.controller.lan
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopController
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.ClickerMessage
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header
+import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.DISCONNECT
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.SWITCH_PAGE
 import com.awsm_guys.mobileclicker.primitivestore.*
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
@@ -85,8 +86,12 @@ class LanDesktopController(
 
     override fun disconnect() {
         if (inited) {
-            rxSocketWrapper.close()
-            inited = false
+            rxSocketWrapper.sendData(
+                objectMapper.writeValueAsString(ClickerMessage(DISCONNECT, "", mutableMapOf()))
+            ) {
+                rxSocketWrapper.close()
+                inited = false
+            }
         }
     }
 

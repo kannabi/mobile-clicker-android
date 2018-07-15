@@ -37,6 +37,7 @@ class ClickerPresenter(
 
     override fun onDestroy() {
         compositeDisposable.clear()
+        model.disconnect()
     }
 
     private fun startConnection(): Disposable =
@@ -67,6 +68,7 @@ class ClickerPresenter(
         context.startActivity(
                 Intent(context, ConnectionActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
 

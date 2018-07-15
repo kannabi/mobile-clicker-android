@@ -3,14 +3,14 @@ package com.awsm_guys.mobileclicker.clicker.model.controller.lan
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.io.Closeable
 import java.net.Socket
 import java.net.SocketException
 
-class RxSocketWrapper(private val socket: Socket): LoggingMixin {
+class RxSocketWrapper(private val socket: Socket): LoggingMixin, Closeable {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -49,7 +49,7 @@ class RxSocketWrapper(private val socket: Socket): LoggingMixin {
 
     fun sendData(data: String) {
         compositeDisposable.add(
-            Single.fromCallable {
+            Completable.fromCallable {
                 outputStream.write(data.toByteArray())
                 outputStream.flush()
             }.subscribeOn(Schedulers.io())
@@ -57,7 +57,17 @@ class RxSocketWrapper(private val socket: Socket): LoggingMixin {
         )
     }
 
-    fun close(){
+    fun sendData(data: String, completeCallback: () -> Unit) {
+        compositeDisposable.add(
+                Completable.fromCallable {
+                    outputStream.write(data.toByteArray())
+                    outputStream.flush()
+                }.subscribeOn(Schedulers.io())
+                        .subscribe(completeCallback, ::trace)
+        )
+    }
+
+    override fun close() {
         inputStream.close()
         outputStream.close()
         socket.close()
