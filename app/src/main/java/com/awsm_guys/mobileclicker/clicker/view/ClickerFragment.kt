@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.awsm_guys.mobileclicker.App
 import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.clicker.IClickerPresenter
@@ -38,9 +39,12 @@ class ClickerFragment:
     }
 
     override fun showConnectionProcess() {
+        enableElements(false)
     }
 
     override fun showConnectionEstablished() {
+        Toast.makeText(context, "Connection established", Toast.LENGTH_SHORT).show()
+        enableElements(true)
     }
 
     override fun showConnectionLossDialog() {
@@ -56,5 +60,12 @@ class ClickerFragment:
     }
 
     override fun showConnectionClose() {
+        Toast.makeText(context, "Desktop disconnected", Toast.LENGTH_SHORT).show()
+        enableElements(false)
+    }
+
+    private fun enableElements(enable: Boolean) {
+        previous_page_button.isEnabled = enable
+        next_page_button.isEnabled = enable
     }
 }
