@@ -52,11 +52,11 @@ class ClickerFragment:
     }
 
     override fun updateCurrentPage(number: Int) {
-        current_page.text = number.toString()
+        current_page.text = (number + 1).toString()
     }
 
     override fun updateMaxPage(maxNumber: Int) {
-        max_page.text = maxNumber.toString()
+        max_page.text = (maxNumber).toString()
     }
 
     override fun showConnectionClose() {

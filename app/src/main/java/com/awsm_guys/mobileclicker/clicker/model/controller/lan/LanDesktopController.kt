@@ -96,7 +96,7 @@ class LanDesktopController(
     }
 
     override fun switchPage(page: Int) {
-        if (page in 1..maxPage!!) {
+        if (page in 0 until maxPage!!) {
             rxSocketWrapper.sendData(
                     getMessage(Header.SWITCH_PAGE, page.toString(), mutableMapOf())
             )

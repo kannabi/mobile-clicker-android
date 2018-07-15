@@ -50,10 +50,7 @@ class ClickerModel(
         compositeDisposable.add(
                 desktopController.getPageSwitchingObservable()
                         .subscribeOn(Schedulers.io())
-                        .map {
-                            currentPage = it
-                            PageSwitch(it)
-                        }
+                        .map { PageSwitch(it.also(::currentPage::set)) }
                         .subscribe(clickerEventSubject::onNext, {
                             trace(it)
                             clickerEventSubject.onNext(ClickerBroken())
