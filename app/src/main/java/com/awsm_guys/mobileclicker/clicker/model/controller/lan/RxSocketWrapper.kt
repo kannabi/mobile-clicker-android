@@ -31,8 +31,9 @@ class RxSocketWrapper(private val socket: Socket): LoggingMixin, Closeable {
             Completable.fromCallable {
                 try {
                     val data = ByteArray(2048)
-                    while (inputStream.read(data) != -1){
-                        dataSubject.onNext(String(data))
+                    while (inputStream.read(data) != -1) {
+                        dataSubject.onNext(String(data, 0, data.indexOf(0)))
+                        data.fill(0)
                     }
                 } catch (e: SocketException) {
                     dataSubject.onComplete()
