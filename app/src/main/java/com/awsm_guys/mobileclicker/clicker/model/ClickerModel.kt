@@ -38,7 +38,7 @@ class ClickerModel(
             desktopController.init()
             subscribeToDesktopController()
         }
-        .doOnNext{ clickerEventSubject.onNext(ConnectionOpen(desktopController.getPageNumbers())) }
+        .doOnNext { clickerEventSubject.onNext(ConnectionOpen()) }
         .flatMap { clickerEventSubject.hide() }
 
     override fun disconnect() {
@@ -58,17 +58,18 @@ class ClickerModel(
                             clickerEventSubject.onNext(ConnectionClose())
                         })
         )
+
+        compositeDisposable.add(
+                desktopController.getMetaUpdateObservable()
+                        .subscribeOn(Schedulers.io())
+                        .map(::MetaUpdate)
+                        .subscribe(clickerEventSubject::onNext, ::trace)
+        )
     }
 
-    override fun switchPage(number: Int) {
-        desktopController.switchPage(number)
-    }
+    override fun switchPage(number: Int) = desktopController.switchPage(number)
 
-    override fun onNextClick() {
-        switchPage(currentPage + 1)
-    }
+    override fun onNextClick() = switchPage(currentPage + 1)
 
-    override fun onPreviousClick() {
-        switchPage(currentPage - 1)
-    }
+    override fun onPreviousClick() = switchPage(currentPage - 1)
 }

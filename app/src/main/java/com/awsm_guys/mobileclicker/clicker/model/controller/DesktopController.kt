@@ -1,5 +1,6 @@
 package com.awsm_guys.mobileclicker.clicker.model.controller
 
+import com.awsm_guys.mobileclicker.clicker.model.controller.poko.Meta
 import io.reactivex.Observable
 
 interface DesktopController {
@@ -17,6 +18,8 @@ interface DesktopController {
      * @return a new page number
      * */
     fun getPageSwitchingObservable(): Observable<Int>
+
+    fun getMetaUpdateObservable(): Observable<Meta>
 
     fun disconnect()
 }

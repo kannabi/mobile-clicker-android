@@ -30,7 +30,7 @@ class RxSocketWrapper(private val socket: Socket): LoggingMixin, Closeable {
         compositeDisposable.add(
             Completable.fromCallable {
                 try {
-                    val data = ByteArray(512)
+                    val data = ByteArray(2048)
                     while (inputStream.read(data) != -1){
                         dataSubject.onNext(String(data))
                     }

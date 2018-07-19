@@ -2,4 +2,7 @@
 <resources>
     <dimen name="switch_button_main_text_size">24sp</dimen>
     <dimen name="big_margin">16dp</dimen>
+    <dimen name="card_margin">8dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="slide_item_title_text_size">28sp</dimen>
 </resources>

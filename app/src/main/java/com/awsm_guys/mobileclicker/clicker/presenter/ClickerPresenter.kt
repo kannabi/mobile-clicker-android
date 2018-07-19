@@ -54,12 +54,12 @@ class ClickerPresenter(
             is ConnectionClose -> onGoToConnection()
             is ClickerBroken -> view?.showConnectionLossDialog()
             is PageSwitch -> view?.updateCurrentPage(event.page)
-            is ConnectionOpen -> {
+            is ConnectionOpen -> view?.showConnectionEstablished()
+            is MetaUpdate ->
                 view?.apply {
-                    showConnectionEstablished()
-                    updateMaxPage(event.maxPage)
+                    updateMaxPage(event.meta.maxPage)
+                    updateSlidesImages(event.meta.tinySlides)
                 }
-            }
         }
     }
 

@@ -9,6 +9,8 @@ import com.awsm_guys.mobileclicker.App
 import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.clicker.IClickerPresenter
 import com.awsm_guys.mobileclicker.clicker.IClickerView
+import com.awsm_guys.mobileclicker.clicker.model.controller.poko.Page
+import com.awsm_guys.mobileclicker.clicker.view.slideslist.SlidesBottomListDialog
 import com.awsm_guys.mobileclicker.di.ClickerComponent
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import com.awsm_guys.mobileclicker.utils.wrapClickListening
@@ -16,11 +18,20 @@ import com.kannabi.simplelifecycleapilibrary.lifecycleapi.fragment.PresenterFrag
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.mobile_clicker_layout.*
 
+
+
 class ClickerFragment:
         PresenterFragment<IClickerView, ClickerComponent, IClickerPresenter>(),
         IClickerView, LoggingMixin {
 
     private val compositeDisposable = CompositeDisposable()
+
+    private val slidesDialog by lazy {
+        SlidesBottomListDialog(activity!!).apply {
+            setContentView(LayoutInflater.from(activity!!).inflate(R.layout.slides_list, null))
+        }
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.mobile_clicker_layout, container, false)
@@ -32,6 +43,7 @@ class ClickerFragment:
     override fun onStart() {
         super.onStart()
 
+        wrapClickListening(compositeDisposable, current_page) { showSlidesList() }
         wrapClickListening(compositeDisposable, next_page_button) { getPresenter().onNextClick() }
         wrapClickListening(compositeDisposable, previous_page_button) {
             getPresenter().onPreviousClick()
@@ -68,4 +80,10 @@ class ClickerFragment:
         previous_page_button.isEnabled = enable
         next_page_button.isEnabled = enable
     }
+
+    override fun updateSlidesImages(slides: List<Page>) {
+        slidesDialog.updateSlides(slides.toMutableList())
+    }
+
+    private fun showSlidesList() = slidesDialog.show()
 }
