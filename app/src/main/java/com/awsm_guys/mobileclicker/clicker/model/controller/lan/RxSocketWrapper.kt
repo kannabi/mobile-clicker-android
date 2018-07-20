@@ -10,29 +10,31 @@ import java.io.Closeable
 import java.net.Socket
 import java.net.SocketException
 
-class RxSocketWrapper(private val socket: Socket): LoggingMixin, Closeable {
+class RxSocketWrapper(
+        private val socket: Socket,
+        private var bufferSize: Int = 2048
+        ): LoggingMixin, Closeable {
+
+    private val MESSAGE_END: ByteArray = byteArrayOf(-1)
 
     private val compositeDisposable = CompositeDisposable()
 
     private val outputStream = socket.getOutputStream()
+        get() = synchronized(lock) { return field }
     private val inputStream = socket.getInputStream()
 
     private val lock = Any()
     private val dataSubject = PublishSubject.create<String>()
-    get() {
-        synchronized(lock) {
-            return field
-        }
-    }
+        get() = synchronized(lock) { return field }
 
     val inputObservable: Observable<String> by lazy {
 
         compositeDisposable.add(
             Completable.fromCallable {
                 try {
-                    val data = ByteArray(2048)
+                    val data = ByteArray(bufferSize)
                     while (inputStream.read(data) != -1) {
-                        dataSubject.onNext(String(data, 0, data.indexOf(0)))
+                        processData(data)
                         data.fill(0)
                     }
                 } catch (e: SocketException) {
@@ -48,13 +50,29 @@ class RxSocketWrapper(private val socket: Socket): LoggingMixin, Closeable {
         return@lazy dataSubject.hide()
     }
 
+    private val stringBuilder = StringBuilder()
+
+    private fun processData(data: ByteArray) {
+        val messageEnd = data.indexOf(MESSAGE_END[0])
+        val isMessageEnd = messageEnd != -1
+
+        stringBuilder.append(
+                String(data, 0, if (isMessageEnd) messageEnd else bufferSize)
+        )
+        if (isMessageEnd) {
+            dataSubject.onNext(stringBuilder.toString())
+            stringBuilder.setLength(0)
+        }
+    }
+
     fun sendData(data: String) {
         compositeDisposable.add(
             Completable.fromCallable {
                 outputStream.write(data.toByteArray())
+                outputStream.write(MESSAGE_END)
                 outputStream.flush()
             }.subscribeOn(Schedulers.io())
-            .subscribe({log("send $data")}, ::trace)
+            .subscribe({ log("send $data") }, ::trace)
         )
     }
 
