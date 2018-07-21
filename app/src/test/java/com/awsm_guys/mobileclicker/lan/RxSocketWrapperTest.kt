@@ -2,7 +2,9 @@ package com.awsm_guys.mobileclicker.lan
 
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.RxSocketWrapper
 import com.awsm_guys.mobileclicker.utils.makeSingle
+import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.junit.Test
 import java.net.InetSocketAddress
@@ -27,12 +29,32 @@ class RxSocketWrapperTest {
 
         rxSocketWrapper.inputObservable
                 .subscribeOn(Schedulers.io())
-                .subscribe({
-                    assert(it == testBigString)
-                    countDownLatch.countDown()
-                }, {
-                    countDownLatch.countDown()
+                .subscribe(object : Observer<String> {
+                    private var counter = 0
+
+                    override fun onNext(data: String) {
+                        if (counter < 3) {
+                            assert(data == testBigString)
+                        } else {
+                            assert(data == smallString)
+                        }
+                        counter++
+                        println(counter)
+                        if (counter == 4) {
+                            countDownLatch.countDown()
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                        countDownLatch.countDown()
+                    }
+
+                    override fun onComplete() {}
+
+                    override fun onSubscribe(d: Disposable) {}
                 })
+
         countDownLatch.await()
         rxSocketWrapper.close()
     }
@@ -47,11 +69,17 @@ class RxSocketWrapperTest {
 
         Thread.sleep(1000)
         rxSocketWrapper.sendData(testBigString)
+        rxSocketWrapper.sendData(testBigString)
+
+        Thread.sleep(500)
 
         rxSocketWrapper.sendData(testBigString)
+        rxSocketWrapper.sendData(smallString)
 
         countDownLatch.await()
     }
+
+    private val smallString = "Post hoc, ergo propter hoc"
 
     private val testBigString =
             "From fairest creatures we desire increase,\n" +
@@ -142,5 +170,5 @@ class RxSocketWrapperTest {
                     "Then what could death do, if thou shouldst depart,\n" +
                     "Leaving thee living in posterity?\n" +
                     "    Be not self-will'd, for thou art much too fair\n" +
-                    "    To be death's conquest and make worms thine heir. "
+                    "    To be death's conquest and make worms thine heir. }"
 }

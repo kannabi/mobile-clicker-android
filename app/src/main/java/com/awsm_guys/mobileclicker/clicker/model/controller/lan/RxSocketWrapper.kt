@@ -16,6 +16,7 @@ class RxSocketWrapper(
         ): LoggingMixin, Closeable {
 
     private val MESSAGE_END: ByteArray = byteArrayOf(-1)
+    private val EMPTY_BYTE: Byte = -2
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -35,7 +36,7 @@ class RxSocketWrapper(
                     val data = ByteArray(bufferSize)
                     while (inputStream.read(data) != -1) {
                         processData(data)
-                        data.fill(0)
+                        data.fill(EMPTY_BYTE)
                     }
                 } catch (e: SocketException) {
                     dataSubject.onComplete()
@@ -53,15 +54,20 @@ class RxSocketWrapper(
     private val stringBuilder = StringBuilder()
 
     private fun processData(data: ByteArray) {
-        val messageEnd = data.indexOf(MESSAGE_END[0])
-        val isMessageEnd = messageEnd != -1
-
-        stringBuilder.append(
-                String(data, 0, if (isMessageEnd) messageEnd else bufferSize)
-        )
-        if (isMessageEnd) {
-            dataSubject.onNext(stringBuilder.toString())
-            stringBuilder.setLength(0)
+        var previousIndex = 0
+        data.forEachIndexed { i, it ->
+            when (it) {
+                MESSAGE_END[0] -> {
+                    stringBuilder.append(String(data, previousIndex, i - previousIndex))
+                    dataSubject.onNext(stringBuilder.toString())
+                    stringBuilder.setLength(0)
+                    previousIndex = i + 1
+                }
+                EMPTY_BYTE -> previousIndex = i
+            }
+        }
+        if (previousIndex != data.lastIndex) {
+            stringBuilder.append(String(data, previousIndex, bufferSize - previousIndex))
         }
     }
 
@@ -80,6 +86,7 @@ class RxSocketWrapper(
         compositeDisposable.add(
                 Completable.fromCallable {
                     outputStream.write(data.toByteArray())
+                    outputStream.write(MESSAGE_END)
                     outputStream.flush()
                 }.subscribeOn(Schedulers.io())
                         .subscribe(completeCallback, ::trace)
