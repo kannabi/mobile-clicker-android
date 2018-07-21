@@ -4,6 +4,7 @@ import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import java.io.Closeable
@@ -71,15 +72,22 @@ class RxSocketWrapper(
         }
     }
 
+    private var sendSubject = PublishSubject.create<String>()
+    private var sendDisposable: Disposable? = null
+
+
     fun sendData(data: String) {
-        compositeDisposable.add(
-            Completable.fromCallable {
-                outputStream.write(data.toByteArray())
-                outputStream.write(MESSAGE_END)
-                outputStream.flush()
-            }.subscribeOn(Schedulers.io())
-            .subscribe({ log("send $data") }, ::trace)
-        )
+        if (sendDisposable == null) {
+           sendSubject
+                   .subscribeOn(Schedulers.io())
+                   .subscribe({
+                       outputStream.write(it.toByteArray())
+                       outputStream.write(MESSAGE_END)
+                       outputStream.flush()
+                   }, ::trace)
+        }
+
+        sendSubject.onNext(data)
     }
 
     fun sendData(data: String, completeCallback: () -> Unit) {
