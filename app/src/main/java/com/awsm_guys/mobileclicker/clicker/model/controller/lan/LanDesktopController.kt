@@ -120,7 +120,7 @@ class LanDesktopController(
                                 this["maxPage"]!!.toInt().also(::maxPage::set),
                                 (0 until maxPage!!)
                                         .map(Int::toString)
-                                        .map { Page(it, this[it]!!) }
+                                        .map { Page(it, this[it] ?: "") }
                         )
                     }
             )

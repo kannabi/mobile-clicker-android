@@ -26,7 +26,7 @@ class SlidesAdapter(context: Context): AbstractAdapter<Page, SlideViewHolder>(co
         val item = mItems[position]
 
         item.smallImageBase64.takeIf { it.isNotBlank() }.let {
-            val decodedString = Base64.decode(it, Base64.DEFAULT);
+            val decodedString = Base64.decode(it, Base64.DEFAULT)
             holder.image?.setImageBitmap(
                     BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
             )

@@ -42,7 +42,9 @@ class ClickerModel(
         .flatMap { clickerEventSubject.hide() }
 
     override fun disconnect() {
-        desktopController.disconnect()
+        if (::desktopController.isInitialized) {
+            desktopController.disconnect()
+        }
         compositeDisposable.clear()
     }
 

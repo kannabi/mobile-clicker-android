@@ -24,7 +24,7 @@ class RxSocketWrapperTest {
                 connect(
                     InetSocketAddress("127.0.0.1", 8841), 5000
                 )
-            }
+            }, 512
         )
 
         rxSocketWrapper.inputObservable
@@ -33,14 +33,12 @@ class RxSocketWrapperTest {
                     private var counter = 0
 
                     override fun onNext(data: String) {
-                        if (counter < 3) {
-                            assert(data == testBigString)
-                        } else {
-                            assert(data == smallString)
+                        when (counter) {
+                            0 -> assert(data == smallString)
+                            1 -> assert(data == bigString)
                         }
                         counter++
-                        println(counter)
-                        if (counter == 4) {
+                        if (counter == 2) {
                             countDownLatch.countDown()
                         }
                     }
@@ -67,21 +65,16 @@ class RxSocketWrapperTest {
                     RxSocketWrapper(it.accept())
                 }
 
-        Thread.sleep(1000)
-        rxSocketWrapper.sendData(testBigString)
-        rxSocketWrapper.sendData(testBigString)
-
         Thread.sleep(500)
-
-        rxSocketWrapper.sendData(testBigString)
         rxSocketWrapper.sendData(smallString)
+        rxSocketWrapper.sendData(bigString)
 
         countDownLatch.await()
     }
 
     private val smallString = "Post hoc, ergo propter hoc"
 
-    private val testBigString =
+    private val bigString =
             "From fairest creatures we desire increase,\n" +
                     "That thereby beauty's rose might never die,\n" +
                     "But as the riper should by time decease,\n" +

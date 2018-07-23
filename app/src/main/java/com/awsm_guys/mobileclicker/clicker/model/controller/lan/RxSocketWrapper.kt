@@ -1,6 +1,7 @@
 package com.awsm_guys.mobileclicker.clicker.model.controller.lan
 
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +23,6 @@ class RxSocketWrapper(
     private val compositeDisposable = CompositeDisposable()
 
     private val outputStream = socket.getOutputStream()
-        get() = synchronized(lock) { return field }
     private val inputStream = socket.getInputStream()
 
     private val lock = Any()
@@ -35,6 +35,7 @@ class RxSocketWrapper(
             Completable.fromCallable {
                 try {
                     val data = ByteArray(bufferSize)
+                    data.fill(EMPTY_BYTE)
                     while (inputStream.read(data) != -1) {
                         processData(data)
                         data.fill(EMPTY_BYTE)
@@ -49,7 +50,7 @@ class RxSocketWrapper(
             .subscribe(dataSubject::onComplete, dataSubject::onError)
         )
 
-        return@lazy dataSubject.hide()
+        return@lazy dataSubject.hide().observeOn(Schedulers.io())
     }
 
     private val stringBuilder = StringBuilder()
@@ -76,29 +77,21 @@ class RxSocketWrapper(
     private var sendDisposable: Disposable? = null
 
 
-    fun sendData(data: String) {
+    fun sendData(data: String, completeCallback: (() -> Unit)? = null) {
         if (sendDisposable == null) {
-           sendSubject
-                   .subscribeOn(Schedulers.io())
-                   .subscribe({
-                       outputStream.write(it.toByteArray())
-                       outputStream.write(MESSAGE_END)
-                       outputStream.flush()
-                   }, ::trace)
+            sendDisposable =
+                    sendSubject.hide().toFlowable(BackpressureStrategy.BUFFER)
+                    .observeOn(Schedulers.io())
+                    .subscribe({
+                        synchronized(outputStream) {
+                            outputStream.write(it.toByteArray().plus(MESSAGE_END[0]))
+                            outputStream.flush()
+                        }
+                        completeCallback?.invoke()
+                    }, ::trace)
         }
 
         sendSubject.onNext(data)
-    }
-
-    fun sendData(data: String, completeCallback: () -> Unit) {
-        compositeDisposable.add(
-                Completable.fromCallable {
-                    outputStream.write(data.toByteArray())
-                    outputStream.write(MESSAGE_END)
-                    outputStream.flush()
-                }.subscribeOn(Schedulers.io())
-                        .subscribe(completeCallback, ::trace)
-        )
     }
 
     override fun close() {
