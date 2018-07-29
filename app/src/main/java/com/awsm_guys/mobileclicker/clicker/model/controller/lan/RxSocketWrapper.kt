@@ -14,7 +14,7 @@ import java.net.SocketException
 
 class RxSocketWrapper(
         private val socket: Socket,
-        private var bufferSize: Int = 2048
+        private var bufferSize: Int = 32
         ): LoggingMixin, Closeable {
 
     private val MESSAGE_END: ByteArray = byteArrayOf(-1)

@@ -24,7 +24,7 @@ class RxSocketWrapperTest {
                 connect(
                     InetSocketAddress("127.0.0.1", 8841), 5000
                 )
-            }, 512
+            }
         )
 
         rxSocketWrapper.inputObservable
