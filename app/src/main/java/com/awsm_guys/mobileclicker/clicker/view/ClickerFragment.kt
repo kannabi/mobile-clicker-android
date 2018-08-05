@@ -1,6 +1,7 @@
 package com.awsm_guys.mobileclicker.clicker.view
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +20,16 @@ import com.awsm_guys.mobileclicker.utils.wrapClickListening
 import com.kannabi.simplelifecycleapilibrary.lifecycleapi.fragment.PresenterFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.mobile_clicker_layout.*
 
 
 
 class ClickerFragment:
         PresenterFragment<IClickerView, ClickerComponent, IClickerPresenter>(),
-        IClickerView, LoggingMixin {
+        IClickerView,
+        LoggingMixin
+{
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -62,6 +66,18 @@ class ClickerFragment:
         wrapClickListening(compositeDisposable, previous_page_button) {
             getPresenter().onPreviousClick()
         }
+
+        compositeDisposable.add(
+                (activity as VolumeButtonBroadcastDelegate.VolumeButtonsObservable)
+                        .getObservable()
+                        .observeOn(Schedulers.io())
+                        .subscribe({
+                            when (it) {
+                                KeyEvent.KEYCODE_VOLUME_UP -> getPresenter().onNextClick()
+                                KeyEvent.KEYCODE_VOLUME_DOWN -> getPresenter().onPreviousClick()
+                            }
+                        }, ::trace)
+        )
     }
 
     override fun showConnectionProcess() {
