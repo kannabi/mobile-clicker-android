@@ -38,6 +38,7 @@ class ClickerFragment:
                             .map(AbstractAdapter<Page, SlideViewHolder>.ItemClicked::item)
                             .map(Page::title)
                             .map(String::toInt)
+                            .map(Int::dec)
                             .subscribe(getPresenter()::onPageSwitching, ::trace)
             )
         }

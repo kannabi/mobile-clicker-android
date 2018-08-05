@@ -118,7 +118,7 @@ class LanDesktopController(
                     with(message.features) {
                         Meta(
                                 this["maxPage"]!!.toInt().also(::maxPage::set),
-                                (0 until maxPage!!)
+                                (1..maxPage!!)
                                         .map(Int::toString)
                                         .map { Page(it, this[it] ?: "") }
                         )

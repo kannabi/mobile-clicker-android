@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.io.Closeable
 import java.net.Socket
@@ -26,7 +27,7 @@ class RxSocketWrapper(
     private val inputStream = socket.getInputStream()
 
     private val lock = Any()
-    private val dataSubject = PublishSubject.create<String>()
+    private val dataSubject = BehaviorSubject.create<String>()
         get() = synchronized(lock) { return field }
 
     val inputObservable: Observable<String> by lazy {
@@ -83,7 +84,7 @@ class RxSocketWrapper(
                     sendSubject.hide().toFlowable(BackpressureStrategy.BUFFER)
                     .observeOn(Schedulers.io())
                     .subscribe({
-                        synchronized(outputStream) {
+                        synchronized(outputStream!!) {
                             outputStream.write(it.toByteArray().plus(MESSAGE_END[0]))
                             outputStream.flush()
                         }
