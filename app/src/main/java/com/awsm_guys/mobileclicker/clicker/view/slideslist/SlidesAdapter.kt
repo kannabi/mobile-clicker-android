@@ -11,7 +11,7 @@ class SlidesAdapter(context: Context): AbstractAdapter<Page, SlideViewHolder>(co
 
     companion object {
         const val HTML_START = """<!DOCTYPE html><html><head></head><body><img src="data:image/png;base64,"""
-        const val HTML_END = """"  style="height: 100%; width: 100%; object-fit: contain"></body></html>"""
+        const val HTML_END = """"  style="height: 100%; width: 100%; object-fit: contain" alt"It is supposed to be a mini-slide there but smth went wrong :|"></body></html>"""
     }
 
     override fun updateItem(item: Page) { /*empty*/ }
