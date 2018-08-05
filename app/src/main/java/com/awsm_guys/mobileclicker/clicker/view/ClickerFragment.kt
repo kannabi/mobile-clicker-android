@@ -10,11 +10,14 @@ import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.clicker.IClickerPresenter
 import com.awsm_guys.mobileclicker.clicker.IClickerView
 import com.awsm_guys.mobileclicker.clicker.model.controller.poko.Page
+import com.awsm_guys.mobileclicker.clicker.view.slideslist.AbstractAdapter
+import com.awsm_guys.mobileclicker.clicker.view.slideslist.SlideViewHolder
 import com.awsm_guys.mobileclicker.clicker.view.slideslist.SlidesBottomListDialog
 import com.awsm_guys.mobileclicker.di.ClickerComponent
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import com.awsm_guys.mobileclicker.utils.wrapClickListening
 import com.kannabi.simplelifecycleapilibrary.lifecycleapi.fragment.PresenterFragment
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.mobile_clicker_layout.*
 
@@ -29,11 +32,21 @@ class ClickerFragment:
     private val slidesDialog by lazy {
         SlidesBottomListDialog(activity!!).apply {
             setContentView(LayoutInflater.from(activity!!).inflate(R.layout.slides_list, null))
+            compositeDisposable.add(
+                    clickObservable
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .map(AbstractAdapter<Page, SlideViewHolder>.ItemClicked::item)
+                            .map(Page::title)
+                            .map(String::toInt)
+                            .subscribe(getPresenter()::onPageSwitching, ::trace)
+            )
         }
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.mobile_clicker_layout, container, false)
     }
 

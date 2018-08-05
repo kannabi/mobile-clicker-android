@@ -5,7 +5,6 @@ import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 
 /**
  * Created by kannabi on 15.03.2017.
@@ -16,10 +15,7 @@ abstract class AbstractAdapter<K, T : RecyclerView.ViewHolder>(protected var mCo
 
     protected val mItems = mutableListOf<K>()
 
-    protected val mItemClickedSubject: PublishSubject<ItemClicked>
-                                        by lazy { PublishSubject.create<ItemClicked>() }
-
-    fun getItemClickedObservable(): Observable<ItemClicked> = mItemClickedSubject.hide()
+    abstract fun getItemClickedObservable(): Observable<ItemClicked>
 
     fun getItems() = mItems
 
