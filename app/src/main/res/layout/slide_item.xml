@@ -15,11 +15,10 @@
         android:layout_margin="@dimen/small_margin"
         android:text="0"/>
 
-    <ImageView
+    <WebView
         android:id="@+id/image"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:src="@drawable/small_image_placeholder"
         android:layout_gravity="center_vertical"
         android:layout_weight="5"/>
 

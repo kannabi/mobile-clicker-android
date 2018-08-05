@@ -1,15 +1,18 @@
 package com.awsm_guys.mobileclicker.clicker.view.slideslist
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.support.v7.util.DiffUtil
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.awsm_guys.mobileclicker.R
 import com.awsm_guys.mobileclicker.clicker.model.controller.poko.Page
 
 class SlidesAdapter(context: Context): AbstractAdapter<Page, SlideViewHolder>(context) {
+
+    companion object {
+        const val HTML_START = """<!DOCTYPE html><html><head></head><body><img src="data:image/png;base64,"""
+        const val HTML_END = """"  style="height: 100%; width: 100%; object-fit: contain"></body></html>"""
+    }
 
     override fun updateItem(item: Page) { /*empty*/ }
 
@@ -26,18 +29,7 @@ class SlidesAdapter(context: Context): AbstractAdapter<Page, SlideViewHolder>(co
         val item = mItems[position]
 
         item.smallImageBase64.takeIf { it.isNotBlank() }.let {
-            val decodedString =
-                    try {
-                        Base64.decode(it, Base64.DEFAULT)
-                    } catch (e: Exception) {
-                        Base64.decode(
-                                mContext.resources.getString(R.string.small_image_placeholder),
-                                Base64.DEFAULT
-                        )
-                    }
-            holder.image?.setImageBitmap(
-                            BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-            )
+            holder.image?.loadData("$HTML_START$it$HTML_END", "text/html", "UTF-8")
         }
         holder.title?.text = item.title
     }
