@@ -86,4 +86,9 @@ class ClickerFragment:
     }
 
     private fun showSlidesList() = slidesDialog.show()
+
+    override fun onDestroy() {
+        super.onDestroy()
+        slidesDialog.dismiss()
+    }
 }
