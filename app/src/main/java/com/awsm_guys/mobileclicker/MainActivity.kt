@@ -43,7 +43,7 @@ class MainActivity:
             volumeButtonBroadcastDelegate.getPressObservable()
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
-            volumeButtonBroadcastDelegate.onKeyPressed(keyCode)
+        volumeButtonBroadcastDelegate.onKeyPressed(keyCode) || super.onKeyDown(keyCode, event)
 
     override fun onDestroy() {
         volumeButtonBroadcastDelegate.onDestroy()
