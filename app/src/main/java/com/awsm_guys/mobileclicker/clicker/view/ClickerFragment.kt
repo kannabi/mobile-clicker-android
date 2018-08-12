@@ -51,9 +51,7 @@ class ClickerFragment:
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.mobile_clicker_layout, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.mobile_clicker_layout, container, false)
 
     override fun provideComponent(): ClickerComponent =
             (activity!!.application as App).componentProvider.getMobileClickerComponent()
@@ -85,7 +83,6 @@ class ClickerFragment:
     }
 
     override fun showConnectionEstablished() {
-        Toast.makeText(context, "Connection established", Toast.LENGTH_SHORT).show()
         enableElements(true)
     }
 

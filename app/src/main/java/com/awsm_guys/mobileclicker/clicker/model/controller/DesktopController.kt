@@ -22,4 +22,6 @@ interface DesktopController {
     fun getMetaUpdateObservable(): Observable<Meta>
 
     fun disconnect()
+
+    fun isConnected(): Boolean
 }

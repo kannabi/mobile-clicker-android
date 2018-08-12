@@ -95,6 +95,8 @@ class RxSocketWrapper(
         sendSubject.onNext(data)
     }
 
+    fun isConnected() = socket.isConnected && !socket.isClosed
+
     override fun close() {
         inputStream.close()
         outputStream.close()

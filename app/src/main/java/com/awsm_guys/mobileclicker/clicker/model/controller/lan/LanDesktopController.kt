@@ -132,4 +132,6 @@ class LanDesktopController(
 
 
     override fun getMetaUpdateObservable(): Observable<Meta> = updateMetaSubject.hide()
+
+    override fun isConnected() = rxSocketWrapper.isConnected()
 }

@@ -28,7 +28,16 @@ class ClickerPresenter(
 
     override fun onViewReady() {
         view?.showConnectionProcess()
-        compositeDisposable.add(startConnection())
+        if (model.isConnected()) {
+            compositeDisposable.add(
+                model.restoreState()
+                    .subscribe {
+                        view?.showConnectionEstablished()
+                    }
+            )
+        } else {
+            compositeDisposable.add(startConnection())
+        }
     }
 
     override fun detachView() {
