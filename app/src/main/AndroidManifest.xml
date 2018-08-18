@@ -22,7 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".connection.view.ConnectionActivity"/>
+        <activity android:name=".connection.view.ConnectionActivity"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>
