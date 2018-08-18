@@ -31,6 +31,7 @@ class EnterNameFragment : Fragment() {
     set(value) {
         usernameEditText?.setText(value)
         usernameEditText?.setSelection(value.length)
+        enter_button?.isEnabled = isAppropriateName(value)
         field = value
     }
 
@@ -71,12 +72,15 @@ class EnterNameFragment : Fragment() {
         }
 
         name_edittext.addTextChangedListener(object : TextWatcher {
+            private var deleting = false
             override fun afterTextChanged(s: Editable?) {
                 with(name_edittext.text.toString().trim()) {
-                    val isAppropriateLength = (length in 3..10)
+                    val isAppropriateLength = isAppropriateName(this)
 
                     if (!isAppropriateLength) {
-                        showError()
+                        if (deleting) {
+                            showError()
+                        }
                     } else {
                         hideError()
                     }
@@ -89,6 +93,7 @@ class EnterNameFragment : Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                deleting = before > 0
             }
         })
     }
@@ -115,4 +120,6 @@ class EnterNameFragment : Fragment() {
                     .playOn(it)
         }
     }
+
+    private fun isAppropriateName(name: String) = (name.length in 3..10)
 }
