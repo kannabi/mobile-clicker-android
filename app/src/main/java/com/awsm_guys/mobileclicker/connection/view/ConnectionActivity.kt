@@ -33,8 +33,10 @@ class ConnectionActivity :
 
     override fun onBackPressed() {
         if (currentFragmentTag == SEARCH_FRAGMENT_TAG) {
-             getPresenter().onCancelSearch()
+            getPresenter().onCancelSearch()
             currentFragmentTag = ENTER_NAME_FRAGMENT_TAG
+        } else {
+            finish()
         }
         super.onBackPressed()
     }

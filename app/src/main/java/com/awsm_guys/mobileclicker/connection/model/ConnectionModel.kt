@@ -17,6 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
+import java.net.SocketException
 
 class ConnectionModel(
         private var primitiveStore: PrimitiveStore,
@@ -59,12 +60,14 @@ class ConnectionModel(
     }
 
     private fun onError(error: Throwable) {
+        if (error is SocketException) {
+            return
+        }
         connectionSubject.onError(error)
     }
 
     override fun stopConnection() {
         connectionManager.stopListening()
-        managerDisposable?.dispose()
     }
 
     override fun getCurrentUsername(): Single<String> =
@@ -75,8 +78,8 @@ class ConnectionModel(
             )
 
     override fun onDestroy() {
-        managerDisposable?.dispose()
         stopConnection()
         connectionManager.close()
+        managerDisposable?.dispose()
     }
 }

@@ -56,25 +56,25 @@ class LanConnectionManager: ConnectionManager, LoggingMixin {
                     .subscribe(senderSocket::send, ::trace)
         )
 
-            return Observable.fromCallable { connectionSocket.receive(datagramPacket) }
-                    .map {
-                        objectMapper.readValue(
-                                String(datagramPacket.data), ClickerMessage::class.java
-                        )
-                    }
-                    .retry()
-                    .filter { it.header == Header.OK }
-                    .map {
-                        LanDesktopControllerFactory(
-                                datagramPacket.address.hostAddress,
-                                it.body.toInt(),
-                                it.features["sessionId"]
-                                        ?: throw Exception("Empty sessionId"),
-                                it.features["maxPage"]?.toInt()
-                                        ?: throw Exception("Empty or invalid maxPage")
-                        ) as DesktopControllerFactory
-                    }
-                    .retry()
+        return Observable.fromCallable { connectionSocket.receive(datagramPacket) }
+                .map {
+                    objectMapper.readValue(
+                            String(datagramPacket.data), ClickerMessage::class.java
+                    )
+                }
+                .retry()
+                .filter { it.header == Header.OK }
+                .map {
+                    LanDesktopControllerFactory(
+                            datagramPacket.address.hostAddress,
+                            it.body.toInt(),
+                            it.features["sessionId"]
+                                    ?: throw Exception("Empty sessionId"),
+                            it.features["maxPage"]?.toInt()
+                                    ?: throw Exception("Empty or invalid maxPage")
+                    ) as DesktopControllerFactory
+                }
+                .retry()
     }
 
     override fun stopListening() {
