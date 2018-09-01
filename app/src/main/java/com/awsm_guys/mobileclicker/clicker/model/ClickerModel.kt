@@ -8,6 +8,7 @@ import com.awsm_guys.mobileclicker.clicker.model.events.*
 import com.awsm_guys.mobileclicker.primitivestore.CONTROLLER_TAG_KEY
 import com.awsm_guys.mobileclicker.primitivestore.PrimitiveStore
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -24,6 +25,8 @@ class ClickerModel(
     private val compositeDisposable = CompositeDisposable()
 
     private var currentPage: Int = 0
+    private lateinit var currentMeta: MetaUpdate
+    private var connected = false
 
 
     override fun connect(): Observable<ClickerEvent> =
@@ -37,26 +40,24 @@ class ClickerModel(
 
             desktopController.init()
             subscribeToDesktopController()
+            connected = true
         }
-        .doOnNext{ clickerEventSubject.onNext(ConnectionOpen(desktopController.getPageNumbers())) }
+        .doOnNext { clickerEventSubject.onNext(ConnectionOpen()) }
         .flatMap { clickerEventSubject.hide() }
 
     override fun disconnect() {
-
+        if (::desktopController.isInitialized) {
+            desktopController.disconnect()
+            primitiveStore.remove(CONTROLLER_TAG_KEY)
+        }
+        compositeDisposable.clear()
     }
 
     private fun subscribeToDesktopController() {
         compositeDisposable.add(
                 desktopController.getPageSwitchingObservable()
                         .subscribeOn(Schedulers.io())
-                        .map {
-                            currentPage = it
-                            if (it < 0) {
-                            ConnectionClose()
-                            } else {
-                            PageSwitch(it)
-                            }
-                        }
+                        .map { PageSwitch(it.also(::currentPage::set)) }
                         .subscribe(clickerEventSubject::onNext, {
                             trace(it)
                             clickerEventSubject.onNext(ClickerBroken())
@@ -64,17 +65,27 @@ class ClickerModel(
                             clickerEventSubject.onNext(ConnectionClose())
                         })
         )
+
+        compositeDisposable.add(
+                desktopController.getMetaUpdateObservable()
+                        .subscribeOn(Schedulers.io())
+                        .map(::MetaUpdate)
+                        .doOnNext(::currentMeta::set)
+                        .subscribe(clickerEventSubject::onNext, ::trace)
+        )
     }
 
-    override fun switchPage(number: Int) {
-        desktopController.switchPage(number)
-    }
+    override fun switchPage(number: Int) = desktopController.switchPage(number)
 
-    override fun onNextClick() {
-        switchPage(currentPage + 1)
-    }
+    override fun onNextClick() = switchPage(currentPage + 1)
 
-    override fun onPreviousClick() {
-        switchPage(currentPage - 1)
-    }
+    override fun onPreviousClick() = switchPage(currentPage - 1)
+
+    override fun isConnected() = connected && desktopController.isConnected()
+
+    override fun restoreState(): Completable =
+            Completable.fromAction {
+                clickerEventSubject.onNext(currentMeta)
+                clickerEventSubject.onNext(PageSwitch(currentPage))
+            }
 }

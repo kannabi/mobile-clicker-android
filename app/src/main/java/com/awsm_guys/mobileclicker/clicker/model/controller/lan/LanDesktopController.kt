@@ -3,11 +3,14 @@ package com.awsm_guys.mobileclicker.clicker.model.controller.lan
 import com.awsm_guys.mobileclicker.clicker.model.controller.DesktopController
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.ClickerMessage
 import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header
-import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.SWITCH_PAGE
+import com.awsm_guys.mobileclicker.clicker.model.controller.lan.poko.Header.*
+import com.awsm_guys.mobileclicker.clicker.model.controller.poko.Meta
+import com.awsm_guys.mobileclicker.clicker.model.controller.poko.Page
 import com.awsm_guys.mobileclicker.primitivestore.*
 import com.awsm_guys.mobileclicker.utils.LoggingMixin
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
@@ -23,6 +26,9 @@ class LanDesktopController(
 
     private val objectMapper by lazy { jacksonObjectMapper() }
     private lateinit var rxSocketWrapper: RxSocketWrapper
+    private var inited = false
+
+    private val updateMetaSubject = BehaviorSubject.create<Meta>()
 
     override fun init() {
         println("controller init")
@@ -51,6 +57,8 @@ class LanDesktopController(
                     }
                 }
         )
+
+        inited = true
     }
 
     private fun restoreConnectionData() {
@@ -75,17 +83,26 @@ class LanDesktopController(
             rxSocketWrapper.inputObservable
                     .map { objectMapper.readValue(it, ClickerMessage::class.java) }
                     .retry()
+                    //looks like a gross shit. Rewrite it!
+                    .doOnNext { if (it.header == UPDATE_META) emitMetaUpdate(it) }
                     .filter { it.header == SWITCH_PAGE }
                     .map { it.body.toInt() }
                     .doOnNext(::currentPage::set)
                     .retry()
 
     override fun disconnect() {
-        rxSocketWrapper.close()
+        if (inited) {
+            rxSocketWrapper.sendData(
+                objectMapper.writeValueAsString(ClickerMessage(DISCONNECT, "", mutableMapOf()))
+            ) {
+                rxSocketWrapper.close()
+                inited = false
+            }
+        }
     }
 
     override fun switchPage(page: Int) {
-        if (page in 1..maxPage!!) {
+        if (page in 0 until maxPage!!) {
             rxSocketWrapper.sendData(
                     getMessage(Header.SWITCH_PAGE, page.toString(), mutableMapOf())
             )
@@ -94,4 +111,27 @@ class LanDesktopController(
 
     private fun getMessage(header: Header, body: String, features: MutableMap<String, String>) =
             objectMapper.writeValueAsString(ClickerMessage(header, body, features))
+
+    private fun emitMetaUpdate(message: ClickerMessage) {
+        try {
+            updateMetaSubject.onNext(
+                    with(message.features) {
+                        Meta(
+                                this["maxPage"]!!.toInt().also(::maxPage::set),
+                                (1..maxPage!!)
+                                        .map(Int::toString)
+                                        .map { Page(it, this[it] ?: "") }
+                        )
+                    }
+            )
+        } catch (e: Exception) {
+            log("Wrong meta\n$message")
+            trace(e)
+        }
+    }
+
+
+    override fun getMetaUpdateObservable(): Observable<Meta> = updateMetaSubject.hide()
+
+    override fun isConnected() = rxSocketWrapper.isConnected()
 }

@@ -14,4 +14,8 @@ class TestPrimitiveStore: PrimitiveStore {
     }
 
     override fun find(key: String): String? = cache[key]
+
+    override fun remove(key: String) {
+        cache.remove(key)
+    }
 }

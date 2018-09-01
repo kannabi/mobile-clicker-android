@@ -21,13 +21,13 @@ class SearchWidget: View {
     private val paint = Paint()
     private lateinit var localCanvas: Canvas
 
-    private var searchBackgroundColor: Int = 0xFF_2b_2b_2b.toInt()
-    private var searchMainColor: Int = 0xFF_50_C8_78.toInt()
+    private var searchBackgroundColor: Int = 0xFF05668D.toInt()
+    private var searchMainColor: Int = 0xFFF0F3BD.toInt()
 
-    private var circleRaduis: Int = 0
+    private var circleRadius: Int = 0
     private var centerX = 0f
     private var centerY = 0f
-    private val valueAnimator = ValueAnimator.ofFloat(0f, 1f)
+    private val valueAnimator = ValueAnimator.ofFloat(0f, 2f)
     private var init = true
 
     init {
@@ -49,9 +49,9 @@ class SearchWidget: View {
                 typedArray.getInt(R.styleable.SearchWidget_search_main_color, searchMainColor)
         typedArray.recycle()
     }
+
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) :
             super(context, attrs, defStyleAttr)
-
 
     override fun onDraw(canvas: Canvas) {
         if (bitmap == null) {
@@ -66,12 +66,12 @@ class SearchWidget: View {
 
     private fun getInitialBitmap(): Bitmap =
         Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-            localCanvas = Canvas(this).apply(::initialDraw)
+            localCanvas = Canvas(this)
         }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        circleRaduis = max(width, height)
+        circleRadius = max(width, height)
         centerY = (height / 2).toFloat()
         centerX = (width / 2).toFloat()
     }
@@ -97,7 +97,7 @@ class SearchWidget: View {
 
     private fun redrawBitmap(valueAnimator: ValueAnimator){
         val value = valueAnimator.animatedValue as Float
-        if (value == 0f){
+        if (value == 0f) {
             initialDraw(localCanvas)
         } else {
             drawBackground(localCanvas)
@@ -107,7 +107,7 @@ class SearchWidget: View {
                 style = Paint.Style.STROKE
                 strokeWidth = 30f
                 localCanvas.drawCircle(
-                        centerX, centerY, circleRaduis * value, this
+                        centerX, centerY, circleRadius * value, this
                 )
                 alpha = 0xFF
             }
@@ -116,6 +116,11 @@ class SearchWidget: View {
         invalidate()
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        bitmap = getInitialBitmap()
+        drawBackground(localCanvas)
+    }
 
     fun startAnimation() {
         valueAnimator.start()

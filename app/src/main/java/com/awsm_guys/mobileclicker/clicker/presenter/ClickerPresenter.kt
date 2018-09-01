@@ -28,7 +28,16 @@ class ClickerPresenter(
 
     override fun onViewReady() {
         view?.showConnectionProcess()
-        compositeDisposable.add(startConnection())
+        if (model.isConnected()) {
+            compositeDisposable.add(
+                model.restoreState()
+                    .subscribe {
+                        view?.showConnectionEstablished()
+                    }
+            )
+        } else {
+            compositeDisposable.add(startConnection())
+        }
     }
 
     override fun detachView() {
@@ -37,6 +46,7 @@ class ClickerPresenter(
 
     override fun onDestroy() {
         compositeDisposable.clear()
+        model.disconnect()
     }
 
     private fun startConnection(): Disposable =
@@ -53,19 +63,21 @@ class ClickerPresenter(
             is ConnectionClose -> onGoToConnection()
             is ClickerBroken -> view?.showConnectionLossDialog()
             is PageSwitch -> view?.updateCurrentPage(event.page)
-            is ConnectionOpen -> {
+            is ConnectionOpen -> view?.showConnectionEstablished()
+            is MetaUpdate ->
                 view?.apply {
-                    showConnectionEstablished()
-                    updateMaxPage(event.maxPage)
+                    updateMaxPage(event.meta.maxPage)
+                    updateSlidesImages(event.meta.tinySlides)
                 }
-            }
         }
     }
 
     override fun onGoToConnection() {
+        model.disconnect()
         context.startActivity(
                 Intent(context, ConnectionActivity::class.java)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
 
