@@ -48,6 +48,7 @@ class ClickerModel(
     override fun disconnect() {
         if (::desktopController.isInitialized) {
             desktopController.disconnect()
+            primitiveStore.remove(CONTROLLER_TAG_KEY)
         }
         compositeDisposable.clear()
     }

@@ -6,4 +6,6 @@ interface PrimitiveStore {
     fun store(map: Map<String, String>)
 
     fun find(key: String): String?
+
+    fun remove(key: String)
 }
