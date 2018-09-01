@@ -41,13 +41,7 @@ class EnterNameFragment : Fragment() {
                               savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_enter_name, container, false)
                     .also {
-                        val focusCandidateId =
-                                if (savedInstanceState?.getBoolean(EDIT_TEXT_FOCUS_STATE) == true) {
-                                    R.id.name_edittext
-                                } else {
-                                    R.id.focus_workaround
-                                }
-                        it.findViewById<View>(focusCandidateId).requestFocus()
+                        it.findViewById<View>(R.id.name_edittext).requestFocus()
                         usernameEditText = it.findViewById(R.id.name_edittext)
                         currentName = savedInstanceState?.getString(CURRENT_NAME) ?: currentName
                     }

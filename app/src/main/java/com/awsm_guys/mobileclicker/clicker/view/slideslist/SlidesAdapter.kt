@@ -30,7 +30,7 @@ class SlidesAdapter(context: Context): AbstractAdapter<Page, SlideViewHolder>(co
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlideViewHolder =
         SlideViewHolder(
                 LayoutInflater.from(parent.context)
-                        .inflate(R.layout.slide_item, parent, false)
+                        .inflate(R.layout.item_slide, parent, false)
         ).also { holder: SlideViewHolder ->
             holder.image?.setOnTouchListener { view, event ->
                 if (event.action == MotionEvent.ACTION_UP) {

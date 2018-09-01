@@ -21,8 +21,8 @@ class SearchWidget: View {
     private val paint = Paint()
     private lateinit var localCanvas: Canvas
 
-    private var searchBackgroundColor: Int = 0xFF_2b_2b_2b.toInt()
-    private var searchMainColor: Int = 0xFF_50_C8_78.toInt()
+    private var searchBackgroundColor: Int = 0xFF222327.toInt()
+    private var searchMainColor: Int = 0xFF8A89C0.toInt()
 
     private var circleRadius: Int = 0
     private var centerX = 0f
