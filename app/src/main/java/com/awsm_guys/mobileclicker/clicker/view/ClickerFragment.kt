@@ -21,7 +21,7 @@ import com.kannabi.simplelifecycleapilibrary.lifecycleapi.fragment.PresenterFrag
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.mobile_clicker_layout.*
+import kotlinx.android.synthetic.main.fragment_mobile_clicker.*
 
 
 
@@ -51,7 +51,7 @@ class ClickerFragment:
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.mobile_clicker_layout, container, false)
+    ): View? = inflater.inflate(R.layout.fragment_mobile_clicker, container, false)
 
     override fun provideComponent(): ClickerComponent =
             (activity!!.application as App).componentProvider.getMobileClickerComponent()
@@ -59,7 +59,7 @@ class ClickerFragment:
     override fun onStart() {
         super.onStart()
 
-        wrapClickListening(compositeDisposable, current_page) { showSlidesList() }
+        wrapClickListening(compositeDisposable, page_container) { showSlidesList() }
         wrapClickListening(compositeDisposable, next_page_button) { getPresenter().onNextClick() }
         wrapClickListening(compositeDisposable, previous_page_button) {
             getPresenter().onPreviousClick()

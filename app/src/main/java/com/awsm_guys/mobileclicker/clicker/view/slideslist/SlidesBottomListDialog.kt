@@ -2,6 +2,7 @@ package com.awsm_guys.mobileclicker.clicker.view.slideslist
 
 import android.content.Context
 import android.support.design.widget.BottomSheetDialog
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -32,6 +33,10 @@ class SlidesBottomListDialog(
                     }
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(
+                    DividerItemDecoration(context,
+                            (layoutManager as LinearLayoutManager).orientation)
+            )
         }
     }
 
