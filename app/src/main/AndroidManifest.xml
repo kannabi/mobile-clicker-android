@@ -24,6 +24,10 @@
         </activity>
         <activity android:name=".connection.view.ConnectionActivity"
             android:windowSoftInputMode="adjustResize"/>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="7a5910e4857e2365b3e003c7bbcf7e577a383930" />
     </application>
 
 </manifest>
