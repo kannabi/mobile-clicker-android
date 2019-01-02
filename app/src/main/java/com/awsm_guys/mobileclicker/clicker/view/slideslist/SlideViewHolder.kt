@@ -7,9 +7,9 @@ import android.widget.TextView
 import com.awsm_guys.mobileclicker.R
 
 class SlideViewHolder(
-        itemView: View?,
-        val title: TextView? = itemView?.findViewById(R.id.title),
-        val image: WebView? = itemView?.findViewById(R.id.image)
+        itemView: View,
+        val title: TextView? = itemView.findViewById(R.id.title),
+        val image: WebView? = itemView.findViewById(R.id.image)
 ) : ViewHolder(itemView) {
     init {
         image?.settings?.apply {

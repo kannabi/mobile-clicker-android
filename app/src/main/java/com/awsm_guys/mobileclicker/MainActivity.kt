@@ -11,9 +11,9 @@ import com.awsm_guys.mobileclicker.connection.view.ConnectionActivity
 import com.kannabi.simplelifecycleapilibrary.lifecycleapi.activity.ComponentStoreActivity
 import io.reactivex.Observable
 
-class MainActivity:
-        ComponentStoreActivity(),
-        VolumeButtonBroadcastDelegate.VolumeButtonsObservable {
+class MainActivity :
+    ComponentStoreActivity(),
+    VolumeButtonBroadcastDelegate.VolumeButtonsObservable {
 
     private val volumeButtonBroadcastDelegate = VolumeButtonBroadcastDelegate()
 
@@ -27,22 +27,23 @@ class MainActivity:
 
     override fun onBackPressed() {
         startActivity(
-                Intent(this, ConnectionActivity::class.java)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            Intent(this, ConnectionActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         )
     }
 
-    private fun placeFragment(fragment: Fragment){
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(null)
-                .commit()
+    private fun placeFragment(fragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun getObservable(): Observable<Int> =
-            volumeButtonBroadcastDelegate.getPressObservable()
+        volumeButtonBroadcastDelegate.getPressObservable()
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean =
         volumeButtonBroadcastDelegate.onKeyPressed(keyCode) || super.onKeyDown(keyCode, event)
